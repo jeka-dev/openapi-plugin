@@ -12,24 +12,16 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JkOpenApiSourceGenerator extends JkSourceGenerator {
 
-    private final String generator;
+    private final String generatorName;
 
-    private final String inputSpecificationLocation;
+    private final String inputSpecLocation;
 
     private String cliVersion = JkOpenApiGeneratorCmd.DEFAULT_CLI_VERSION;
 
     private Consumer<GenerateCmdBuilder> customizer = generateCmdBuilder -> {};
 
-    public static JkOpenApiSourceGenerator of(String generator, String specLocation) {
-        return new JkOpenApiSourceGenerator(generator, specLocation);
-    }
-
-    public static JkOpenApiSourceGenerator ofSpringServer(String specLocation) {
-        return new JkOpenApiSourceGenerator("spring", specLocation);
-    }
-
-    public static JkOpenApiSourceGenerator ofJavaClient(String specLocation) {
-        return new JkOpenApiSourceGenerator("java", specLocation);
+    public static JkOpenApiSourceGenerator of(String generatorName, String specLocation) {
+        return new JkOpenApiSourceGenerator(generatorName, specLocation);
     }
 
     public JkOpenApiSourceGenerator setCliVersion(String cliVersion) {
@@ -50,7 +42,7 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
     @Override
     protected void generate(JkProject project, Path generatedSourceDir) {
         JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
-        GenerateCmdBuilder generateCmdBuilder = GenerateCmdBuilder.of(generator, inputSpecificationLocation);
+        GenerateCmdBuilder generateCmdBuilder = GenerateCmdBuilder.of(generatorName, inputSpecLocation);
         generateCmdBuilder.add(GenerateCmdBuilder.OUTPUT_PATH, generatedSourceDir.toString());
         if (JkLog.isVerbose()) {
             generateCmdBuilder.add("--verbose");
@@ -59,4 +51,8 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
         cmd.exec(generateCmdBuilder.build());
     }
 
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " " + cliVersion;
+    }
 }

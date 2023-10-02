@@ -73,6 +73,13 @@ public class OpenApiJkBean extends JkBean {
         return generator;
     }
 
+    public JkOpenApiSourceGenerator addSpringServerSourceGenerator(JkProject project, String specLocation) {
+        return addSourceGenerator(project, "spring", specLocation);
+    }
+
+    public JkOpenApiSourceGenerator addJavaClientSourceGenerator(JkProject project, String specLocation) {
+        return addSourceGenerator(project, "java", specLocation);
+    }
 
     private int exec(String cmdLine) {
         JkRepoProperties repoProperties = JkRepoProperties.of(this.getRuntime().getProperties());

@@ -19,7 +19,7 @@ public class SampleBuild_Programmatic extends JkBean {
 
     private void configure(JkProject project) {
         openApi.addSourceGenerator(project, "spring", SPEC_URL).customize(cmdBuilder -> cmdBuilder
-                .addApiAndModelPackage("org.toto")
+                .addApiAndModelPackage("com.mycompany")
                 .add(GenerateCmdBuilder.MODEL_NAME_PREFIX, "Rest")
         );
     }

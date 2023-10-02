@@ -7,24 +7,23 @@ import dev.jeka.core.api.utils.JkUtilsString;
 
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class JkOpenApiGeneratorCmd {
 
     public static final String DEFAULT_CLI_VERSION = "7.0.1";
 
-    private JkRepoSet repos;
+    private final JkRepoSet repos;
 
-    private String openapiGeneratorCliVersion;
+    private final String cliVersion;
 
-    private JkOpenApiGeneratorCmd(JkRepoSet repos, String openapiGeneratorCliVersion) {
+    private JkOpenApiGeneratorCmd(JkRepoSet repos, String cliVersion) {
         this.repos = repos;
-        this.openapiGeneratorCliVersion = openapiGeneratorCliVersion;
+        this.cliVersion = cliVersion;
     }
 
-    public final static JkOpenApiGeneratorCmd of(JkRepoSet repoSet, String version) {
-        return new JkOpenApiGeneratorCmd(repoSet, version);
+    public final static JkOpenApiGeneratorCmd of(JkRepoSet repoSet, String cliVersion) {
+        return new JkOpenApiGeneratorCmd(repoSet, cliVersion);
     }
 
     public int exec(String ...args) {
@@ -50,7 +49,7 @@ public class JkOpenApiGeneratorCmd {
 
     private Path cliJar() {
         return JkCoordinateFileProxy.of(repos, "org.openapitools:openapi-generator-cli:"
-                + openapiGeneratorCliVersion).get();
+                + cliVersion).get();
     }
 
 
