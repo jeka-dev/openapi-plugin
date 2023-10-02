@@ -2,35 +2,43 @@ package dev.jeka.plugins.openapi;
 
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.project.JkSourceGenerator;
+import dev.jeka.core.api.system.JkLog;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.function.Consumer;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JkOpenApiSourceGenerator extends JkSourceGenerator {
 
-    private final String cliVersion;
+    private final String generator;
 
-    private List<String> arguments = new LinkedList<>();
+    private final String inputSpecificationLocation;
 
-    public JkOpenApiSourceGenerator setInputSpec(String pathOrUrl) {
-        return addArguments(JkOpenApiOptions.INPUT_SPEC, pathOrUrl);
+    private String cliVersion = JkOpenApiGeneratorCmd.DEFAULT_CLI_VERSION;
+
+    private Consumer<GenerateCmdBuilder> customizer = generateCmdBuilder -> {};
+
+    public static JkOpenApiSourceGenerator of(String generator, String specLocation) {
+        return new JkOpenApiSourceGenerator(generator, specLocation);
     }
 
-    public JkOpenApiSourceGenerator setGenerator(String generatorName) {
-        return addArguments(JkOpenApiOptions.GENERATOR_NAME, generatorName);
+    public static JkOpenApiSourceGenerator ofSpringServer(String specLocation) {
+        return new JkOpenApiSourceGenerator("spring", specLocation);
     }
 
-    public JkOpenApiSourceGenerator setGeneratorJava() {
-        return setGenerator("java");
+    public static JkOpenApiSourceGenerator ofJavaClient(String specLocation) {
+        return new JkOpenApiSourceGenerator("java", specLocation);
     }
 
-    public JkOpenApiSourceGenerator addArguments(String... args) {
-        arguments.addAll(Arrays.asList(args));
+    public JkOpenApiSourceGenerator setCliVersion(String cliVersion) {
+        this.cliVersion = cliVersion;
+        return this;
+    }
+
+    public JkOpenApiSourceGenerator customize(Consumer<GenerateCmdBuilder> customizer) {
+        this.customizer = customizer;
         return this;
     }
 
@@ -41,11 +49,14 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
 
     @Override
     protected void generate(JkProject project, Path generatedSourceDir) {
-        JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion)
-                .generateCmd()
-                .arguments(JkOpenApiOptions.OUTPUT_PATH, generatedSourceDir.toString())
-                .arguments(arguments)
-                .exec();
+        JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
+        GenerateCmdBuilder generateCmdBuilder = GenerateCmdBuilder.of(generator, inputSpecificationLocation);
+        generateCmdBuilder.add(GenerateCmdBuilder.OUTPUT_PATH, generatedSourceDir.toString());
+        if (JkLog.isVerbose()) {
+            generateCmdBuilder.add("--verbose");
+        }
+        customizer.accept(generateCmdBuilder);
+        cmd.exec(generateCmdBuilder.build());
     }
 
 }

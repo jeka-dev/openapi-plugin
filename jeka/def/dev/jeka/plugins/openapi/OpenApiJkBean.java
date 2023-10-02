@@ -1,101 +1,106 @@
 package dev.jeka.plugins.openapi;
 
+import dev.jeka.core.api.depmanagement.JkDepSuggest;
 import dev.jeka.core.api.depmanagement.JkRepoProperties;
 import dev.jeka.core.api.project.JkProject;
+import dev.jeka.core.api.project.JkSourceGenerator;
+import dev.jeka.core.api.system.JkLog;
 import dev.jeka.core.api.utils.JkUtilsString;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkDoc;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 
-import java.util.Map;
-import java.util.function.Consumer;
+import java.nio.file.Path;
 
 @JkDoc("Provides project configuration for generating code from openApi specifications.")
 public class OpenApiJkBean extends JkBean {
 
-    @JkDoc("The command line arguments in conjonction with 'exec' method.")
-    public String cmdArgs;
-
-    @JkDoc("Relative path from project root, or url, to the openapi specification file.")
-    public String definitionFile;
+    @JkDoc("The command line arguments in conjunction with 'exec' method.")
+    public String cmdLine;
 
     @JkDoc("Version of openapi-generator-cli to use.")
-    public String jarVersion = "6.2.1";
+    @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator:")
+    public String cliVersion = JkOpenApiGeneratorCmd.DEFAULT_CLI_VERSION;
 
-    @JkDoc("Degault package name for both model and api.")
-    public String packageName = "org.openapitools";
-
-    private Consumer<JkOpenApiSourceGenerator> configurer = gen -> {};
-
-    OpenApiJkBean() {
-        this.getRuntime().getBeanOptional(ProjectJkBean.class).ifPresent(projectBean -> {
-            projectBean.configure(this::configure);
-        });
-    }
-
-    /**
-     * Returns a conf
-     */
-    public JkOpenApiSourceGenerator getSourceGenerator() {
-        JkOpenApiSourceGenerator result = new JkOpenApiSourceGenerator(jarVersion)
-                .setInputSpec(definitionFile);
-        if (packageName != null) {
-            String name = packageName.trim();
-            result
-                    .addArguments(JkOpenApiOptions.API_PACKAGE, name)
-                    .addArguments(JkOpenApiOptions.MODEL_PACKAGE, name)
-                    .addArguments(JkOpenApiOptions.INVOKER_PACKAGE, name)
-                    .addArguments(JkOpenApiOptions.PACKAGE_NAME, name);
-        }
-        //result.setGeneratorJava();
-        result.addArguments(JkUtilsString.translateCommandline(cmdArgs));
-        options().entrySet().stream()
-                        .filter(entry -> entry.getKey().startsWith("-"))
-                        .forEach(entry -> result.addArguments(entry.getKey(), entry.getValue()));
-
-        configurer.accept(result);
-        return result;
-    }
-
-    public OpenApiJkBean configure(Consumer<JkOpenApiSourceGenerator> consumer) {
-        this.configurer = consumer;
-        return this;
-    }
+    @JkDoc("If true, the specified cmdLine will be run to generate sources at compile time")
+    public boolean autoGenerate = true;
 
     @JkDoc("Execute openApi cli with argument specified in 'cmdArgs'.")
     public void exec() {
-        cmd().arguments(cmdArgs).exec();
+        exec(this.cmdLine);
     }
 
+    @JkDoc("Display generic help about openApi cli options")
     public void cliHelp() {
-        cmd().arguments("help").exec();
+        exec("help");
     }
 
+    @JkDoc("Display help about available for 'generate' options")
     public void cliHelpGenerate() {
-        cmd().argumentLine("help generate").exec();
+        exec("help generate");
     }
 
     @JkDoc("Display the available generators")
     public void cliList() {
-        cmd().arguments("list").exec();
+        exec("list");
     }
 
     @JkDoc("Display config-help for spring server")
     public void cliConfigHelpSpring() {
-        cmd().arguments("config-help", "-g", "spring").exec();
+        exec("config-help -g spring");
     }
 
-    public Map<String, String> options() {
-        return this.getRuntime().getProperties().getAllStartingWith("openapi.", false);
+    @JkDoc("Display config-help for java client")
+    public void cliConfigHelpJavaClient() {
+        exec("config-help -g java");
     }
 
-    private JkOpenApiGeneratorCmd cmd() {
+    public OpenApiJkBean() {
+        ProjectJkBean projectKBean = this.getRuntime().getBeanOptional(ProjectJkBean.class).orElse(null);
+        if (projectKBean != null) {
+            projectKBean.lately(project -> {
+                if (autoGenerate && !JkUtilsString.isBlank(cmdLine)) {
+                    project.compilation.addSourceGenerator(new CmdLineGenerator());
+                }
+            });
+        }
+    }
+
+    public JkOpenApiSourceGenerator addSourceGenerator(JkProject project, String generatorName, String specLocation) {
+        JkOpenApiSourceGenerator generator = JkOpenApiSourceGenerator.of(generatorName, specLocation)
+                .setCliVersion(this.cliVersion);
+        project.compilation.addSourceGenerator(generator);
+        return generator;
+    }
+
+
+    private int exec(String cmdLine) {
         JkRepoProperties repoProperties = JkRepoProperties.of(this.getRuntime().getProperties());
-        return JkOpenApiGeneratorCmd.of(repoProperties.getDownloadRepos(), jarVersion);
+        JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(repoProperties.getDownloadRepos(), cliVersion);
+        return cmd.execCmdLine(cmdLine);
     }
 
-    private void configure(JkProject project) {
-        project.compilation.addSourceGenerator(this.getSourceGenerator());
+    private class CmdLineGenerator extends JkSourceGenerator {
+
+        @Override
+        protected String getDirName() {
+            return "openapi";
+        }
+
+        @Override
+        protected void generate(JkProject project, Path generatedSourceDir) {
+            JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
+            String effectiveCmdLine = cmdLine + " " + GenerateCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
+            if (JkLog.isVerbose()) {
+                effectiveCmdLine = effectiveCmdLine + " --verbose";
+            }
+            cmd.execCmdLine(effectiveCmdLine);
+        }
+
+        @Override
+        public String toString() {
+            return "OpenapiKBeanGenerator";
+        }
     }
 
 }

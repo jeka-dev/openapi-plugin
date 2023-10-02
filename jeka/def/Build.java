@@ -1,81 +1,77 @@
 import dev.jeka.core.api.crypto.gpg.JkGpg;
 import dev.jeka.core.api.depmanagement.JkDependencySet;
 import dev.jeka.core.api.depmanagement.JkRepo;
-import dev.jeka.core.api.depmanagement.JkRepoProperties;
 import dev.jeka.core.api.depmanagement.JkRepoSet;
-import dev.jeka.core.api.depmanagement.artifact.JkArtifactLocator;
 import dev.jeka.core.api.depmanagement.artifact.JkStandardFileArtifactProducer;
-import dev.jeka.core.api.depmanagement.artifact.JkSuppliedFileArtifactProducer;
 import dev.jeka.core.api.depmanagement.publication.JkMavenPublication;
-import dev.jeka.core.api.depmanagement.publication.JkPomMetadata;
 import dev.jeka.core.api.depmanagement.resolution.JkDependencyResolver;
 import dev.jeka.core.api.file.JkPathSequence;
 import dev.jeka.core.api.file.JkPathTree;
 import dev.jeka.core.api.java.JkJarPacker;
 import dev.jeka.core.api.java.JkJavaCompileSpec;
 import dev.jeka.core.api.java.JkJavaCompiler;
+import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkLocator;
 import dev.jeka.core.api.tooling.JkGitProcess;
 import dev.jeka.core.tool.JkBean;
-import dev.jeka.core.tool.JkDoc;
 import dev.jeka.core.tool.JkInjectClasspath;
-import sun.tools.jar.resources.jar;
+import dev.jeka.core.tool.JkInjectProperty;
+import dev.jeka.core.tool.builtins.git.GitJkBean;
+import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 
 import java.nio.file.Path;
 
 @JkInjectClasspath("org.projectlombok:lombok:1.18.24")
 class Build extends JkBean {
 
-    private JkPathTree sources = JkPathTree.of("jeka/def").andMatching("dev/jeka/plugins/openapi/**");
+    ProjectJkBean projectKBean = getBean(ProjectJkBean.class);
 
-    private Path compileDir = this.getOutputDir().resolve("plugin-classes");
+    GitJkBean gitKBean = this.getBean(GitJkBean.class);
 
-    private String ossrhUser;
-    private String ossrhPwd;
+    @JkInjectProperty("OSSRH_USER")
+    public String ossrhUser;
 
-    private void makeJar(Path jar) {
-        cleanOutput();
-        JkDependencySet deps = JkDependencySet.of("org.projectlombok:lombok:1.18.24")
-                .andFiles(JkLocator.getJekaJarPath());
-        JkPathSequence depFiles = JkDependencyResolver.of().resolve(deps).getFiles();
-        JkJavaCompileSpec compileSpec = JkJavaCompileSpec.of()
-                .setSources(sources.toSet())
-                .setClasspath(depFiles)
-                .setOutputDir(compileDir);
-        JkJavaCompiler.of().compile(compileSpec);
-        JkJarPacker.of(compileDir).makeJar(jar);
+    @JkInjectProperty("OSSRH_PWD")
+    public String ossrhPwd;
+
+    @JkInjectProperty("JEKA_GPG_PASSPHRASE")
+    public String secretRingPassword;
+
+    Build() {
+        projectKBean.lately(this::configure);
+        gitKBean.configureProjectVersion = true;
     }
 
-    public void publish() {
-        JkStandardFileArtifactProducer artifactLocator = JkStandardFileArtifactProducer.of();
-        artifactLocator.putMainArtifact(this::makeJar);
-        JkMavenPublication mavenPublication = JkMavenPublication.of();
-        mavenPublication.setArtifactLocator(artifactLocator);
-
-        mavenPublication.setModuleId("dev.jeka:openapi-plugin");
-        mavenPublication.setVersion(JkGitProcess.of().extractSuffixFromLastCommitMessage("Release:"));
-
-        mavenPublication.pomMetadata
-                .addGithubDeveloper("Jerome Angibaud", "djeang_dev@yahoo.fr")
-                .setProjectUrl("https://jeka.dev")
-                .setScmUrl("https://github.com/jerkar/jeka.git")
-                .addApache2License();
-
-        mavenPublication
+    private void configure(JkProject project) {
+        JkPathTree sources = JkPathTree.of(this.getBaseDir().resolve("jeka/def"))
+                .andMatching("dev/jeka/plugins/openapi/**");
+        project.compilation.layout.setSources(sources.toSet());
+        project.compilation.configureDependencies(deps -> deps
+                .andFiles(JkLocator.getJekaJarPath())
+                .and("org.projectlombok:lombok:1.18.24")
+        );
+        project.packaging.configureRuntimeDependencies(deps -> deps
+                .minus(JkLocator.getJekaJarPath())
+                .minus("org.projectlombok:lombok")
+        );
+        project.publication.maven
+                .setModuleId("dev.jeka:openapi-plugin")
                 .setPublishRepos(publishRepos())
-                .publish();
+                .pomMetadata
+                    .addGithubDeveloper("Jerome Angibaud", "djeang_dev@yahoo.fr")
+                    .setProjectUrl("https://jeka.dev")
+                    .setScmUrl("https://github.com/jerkar/jeka.git")
+                    .addApache2License();
     }
 
     private JkRepoSet publishRepos() {
         JkRepo snapshotRepo = JkRepo.ofMavenOssrhDownloadAndDeploySnapshot(ossrhUser, ossrhPwd);
-        JkGpg gpg = JkGpg.ofStandardProject(this.getBaseDir());
+        JkGpg gpg = JkGpg.ofSecretRing(getBaseDir().resolve("jeka/secring.gpg"), secretRingPassword);
 
-        JkRepo releaseRepo =  JkRepo.ofMavenOssrhDeployRelease(ossrhUser, ossrhPwd,  gpg.getSigner(""));
-        releaseRepo.publishConfig.setVersionFilter(jkVersion -> !jkVersion.isSnapshot());
+        JkRepo releaseRepo = JkRepo.ofMavenOssrhDeployRelease(ossrhUser, ossrhPwd,  gpg.getSigner(""));
+        releaseRepo.publishConfig.setVersionFilter(version -> !version.isSnapshot());
 
-        JkRepo githubRepo = JkRepo.ofGitHub("jeka-dev", "jeka");
-        githubRepo.publishConfig.setVersionFilter(jkVersion -> !jkVersion.isSnapshot());
-        return  JkRepoSet.of(snapshotRepo, releaseRepo, githubRepo);
+        return  JkRepoSet.of(snapshotRepo, releaseRepo);
     }
 
 }

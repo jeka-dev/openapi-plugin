@@ -12,13 +12,11 @@ import java.util.List;
 
 public class JkOpenApiGeneratorCmd {
 
-    public static final String DEFAULT_CLI_VERSION = "6.2.1";
+    public static final String DEFAULT_CLI_VERSION = "7.0.1";
 
     private JkRepoSet repos;
 
     private String openapiGeneratorCliVersion;
-
-    private List<String> arguments = new LinkedList<>();
 
     private JkOpenApiGeneratorCmd(JkRepoSet repos, String openapiGeneratorCliVersion) {
         this.repos = repos;
@@ -29,59 +27,19 @@ public class JkOpenApiGeneratorCmd {
         return new JkOpenApiGeneratorCmd(repoSet, version);
     }
 
-    /**
-     * Add the 'generate' argument
-     */
-    public JkOpenApiGeneratorCmd generateCmd() {
-        arguments.add("generate");
-        return this;
+    public int exec(String ...args) {
+        return javaProcess().addParams(args).exec();
+    }
+
+    public int exec(List<String> args) {
+        return exec(args.toArray(new String[0]));
     }
 
     /**
-     * The specification file that contains open API specification from which we want to generate code.
-     * @param fileOrUrl can be an url or a file path.
+     * Executes the specified command line as <li>generate -g go --additional-properties=prependFormOrBodyParameters=true -o out -i petstore.yaml</li>
      */
-    public JkOpenApiGeneratorCmd specificationFile(String fileOrUrl) {
-        return argumentLine(JkOpenApiOptions.INPUT_SPEC + fileOrUrl);
-    }
-
-    /**
-     * Thegenerator used to generate code (e.g. java)
-     */
-    public JkOpenApiGeneratorCmd generator(String generatorName) {
-        return argumentLine(JkOpenApiOptions.GENERATOR_NAME + generatorName);
-    }
-
-    public JkOpenApiGeneratorCmd outputDirectory(Path path) {
-        return argumentLine(JkOpenApiOptions.OUTPUT_PATH + path.toString());
-    }
-
-    /**
-     * Add arguments expressed in a single line, space separated arguments.
-     */
-    public JkOpenApiGeneratorCmd argumentLine(String args) {
-        arguments.addAll(Arrays.asList(JkUtilsString.translateCommandline(args)));
-        return this;
-    }
-
-    /**
-     * Add arguments
-     */
-    public JkOpenApiGeneratorCmd arguments(String... args) {
-        arguments.addAll(Arrays.asList(args));
-        return this;
-    }
-
-    /**
-     * Add arguments
-     */
-    public JkOpenApiGeneratorCmd arguments(List<String> args) {
-        arguments.addAll(args);
-        return this;
-    }
-
-    public void exec() {
-        javaProcess().addParams(arguments).exec();
+    public int execCmdLine(String args) {
+        return exec(Arrays.asList(JkUtilsString.translateCommandline(args)));
     }
 
     private JkJavaProcess javaProcess() {
