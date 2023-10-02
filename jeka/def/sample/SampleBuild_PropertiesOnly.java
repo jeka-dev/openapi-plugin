@@ -1,7 +1,6 @@
 package sample;
 
 import dev.jeka.core.api.file.JkPathTree;
-import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 import dev.jeka.plugins.openapi.OpenApiJkBean;
