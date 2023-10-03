@@ -3,7 +3,7 @@ package sample;
 import dev.jeka.core.api.file.JkPathTree;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
-import dev.jeka.plugins.openapi.OpenApiJkBean;
+import dev.jeka.plugins.openapi.OpenapiJkBean;
 
 /**
  * Sample using only properties of OpenApiJkBean
@@ -12,7 +12,7 @@ public class SampleBuild_PropertiesOnly extends JkBean {
 
     ProjectJkBean projectBean = getBean(ProjectJkBean.class);
 
-    OpenApiJkBean openApi = getBean(OpenApiJkBean.class);
+    OpenapiJkBean openApi = getBean(OpenapiJkBean.class);
 
     SampleBuild_PropertiesOnly() {
 

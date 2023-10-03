@@ -13,7 +13,7 @@ import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 import java.nio.file.Path;
 
 @JkDoc("Provides project configuration for generating code from openApi specifications.")
-public class OpenApiJkBean extends JkBean {
+public class OpenapiJkBean extends JkBean {
 
     @JkDoc("The command line arguments in conjunction with 'exec' method.")
     public String cmdLine;
@@ -55,7 +55,7 @@ public class OpenApiJkBean extends JkBean {
         exec("config-help -g java");
     }
 
-    public OpenApiJkBean() {
+    public OpenapiJkBean() {
         ProjectJkBean projectKBean = this.getRuntime().getBeanOptional(ProjectJkBean.class).orElse(null);
         if (projectKBean != null) {
             projectKBean.lately(project -> {
