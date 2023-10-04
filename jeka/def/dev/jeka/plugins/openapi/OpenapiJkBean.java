@@ -5,12 +5,15 @@ import dev.jeka.core.api.depmanagement.JkRepoProperties;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.project.JkSourceGenerator;
 import dev.jeka.core.api.system.JkLog;
-import dev.jeka.core.api.utils.JkUtilsString;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkDoc;
+import dev.jeka.core.tool.JkRuntime;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
+import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
 @JkDoc("Provides project configuration for generating code from openApi specifications.")
 public class OpenapiJkBean extends JkBean {
@@ -59,8 +62,10 @@ public class OpenapiJkBean extends JkBean {
         ProjectJkBean projectKBean = this.getRuntime().getBeanOptional(ProjectJkBean.class).orElse(null);
         if (projectKBean != null) {
             projectKBean.lately(project -> {
-                if (autoGenerate && !JkUtilsString.isBlank(cmdLine)) {
-                    project.compilation.addSourceGenerator(new CmdLineGenerator());
+                if (autoGenerate) {
+                    for (String command : commands(this.getRuntime())) {
+                        project.compilation.addSourceGenerator(new CmdLineGenerator(command));
+                    }
                 }
             });
         } else {
@@ -100,7 +105,10 @@ public class OpenapiJkBean extends JkBean {
         return cmd.execCmdLine(cmdLine);
     }
 
+    @RequiredArgsConstructor
     private class CmdLineGenerator extends JkSourceGenerator {
+
+        private final String command;
 
         @Override
         protected String getDirName() {
@@ -110,7 +118,7 @@ public class OpenapiJkBean extends JkBean {
         @Override
         protected void generate(JkProject project, Path generatedSourceDir) {
             JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
-            String effectiveCmdLine = cmdLine + " " + GenerateCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
+            String effectiveCmdLine = command + " " + GenerateCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
             if (JkLog.isVerbose()) {
                 effectiveCmdLine = effectiveCmdLine + " --verbose";
             }
@@ -121,6 +129,10 @@ public class OpenapiJkBean extends JkBean {
         public String toString() {
             return "OpenapiKBeanGenerator";
         }
+    }
+
+    private static List<String> commands(JkRuntime runtime) {
+        return new LinkedList<>(runtime.getProperties().getAllStartingWith("openapi.gen.", false).values());
     }
 
 }
