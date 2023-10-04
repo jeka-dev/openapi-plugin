@@ -15,12 +15,16 @@ public class SampleBuild_Programmatic extends JkBean {
 
     ProjectJkBean projectBean = getBean(ProjectJkBean.class).lately(this::configure);
 
-    OpenapiJkBean openApi = getBean(OpenapiJkBean.class);
+    OpenapiJkBean openApi = getBean(OpenapiJkBean.class).setCliVersion("7.0.1");
 
     private void configure(JkProject project) {
         openApi.addSourceGenerator(project, "spring", SPEC_URL).customize(cmdBuilder -> cmdBuilder
                 .addApiAndModelPackage("com.mycompany")
                 .add(GenerateCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                .add("--language-specific-primitives=Pet")
+                .addImportMapping("Pet", "com.yourpackage.models.Pet")
+                .addImportMapping("DateTime", "java.time.LocalDateTime")
+                .addTypeMapping("DateTime", "java.time.LocalDateTime")
         );
     }
 

@@ -63,6 +63,9 @@ public class OpenapiJkBean extends JkBean {
                     project.compilation.addSourceGenerator(new CmdLineGenerator());
                 }
             });
+        } else {
+            JkLog.info("No project KBean has been declared prior openapi plugin instantiation." +
+                    " No openapi source generator will be appended from properties openapi.gen.XXX.");
         }
     }
 
@@ -79,6 +82,16 @@ public class OpenapiJkBean extends JkBean {
 
     public JkOpenApiSourceGenerator addJavaClientSourceGenerator(JkProject project, String specLocation) {
         return addSourceGenerator(project, "java", specLocation);
+    }
+
+    public OpenapiJkBean setCliVersion(String cliVersion) {
+        this.cliVersion = cliVersion;
+        return this;
+    }
+
+    public OpenapiJkBean setAutoGenerate(boolean autoGenerate) {
+        this.autoGenerate = autoGenerate;
+        return this;
     }
 
     private int exec(String cmdLine) {
