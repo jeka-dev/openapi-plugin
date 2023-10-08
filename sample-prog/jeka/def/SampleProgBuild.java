@@ -22,8 +22,6 @@ class SampleProgBuild extends JkBean {
     private void configure(JkProject project) {
         project.flatFacade()
             .configureCompileDependencies(deps -> deps
-
-                    // Dependencies needed by generated code
                     .and("org.springframework.boot:spring-boot-starter-web")
                     .and("org.springdoc:springdoc-openapi-common:1.7.0")
                     .and("org.openapitools:jackson-databind-nullable:0.2.6")
