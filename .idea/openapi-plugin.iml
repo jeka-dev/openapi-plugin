@@ -4,7 +4,6 @@
         <output-test url="file://$MODULE_DIR$/.idea/output/test"/>
         <exclude-output/>
         <content url="file://$MODULE_DIR$">
-            <sourceFolder isTestSource="true" url="file://$MODULE_DIR$/jeka/def"/>
             <sourceFolder url="file://$MODULE_DIR$/jeka/def"/>
             <sourceFolder type="java-resource" url="file://$MODULE_DIR$/src/main/resources"/>
             <sourceFolder isTestSource="true" url="file://$MODULE_DIR$/src/test/java"/>

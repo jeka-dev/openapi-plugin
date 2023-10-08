@@ -33,7 +33,7 @@ class SampleProgBuild extends JkBean {
             );
         openapiKBean.addSourceGenerator(project, "spring", "https://petstore.swagger.io/v2/swagger.json")
                 .customize(cmdBuilder -> cmdBuilder
-                        .add("--model-name-prefix", "REST")
+                        .add("--model-name-prefix", "Rest")
                         .addApiAndModelPackage("org.example.server")
                         .addAdditionalProperties("useSpringBoot3", "true")
                         .addAdditionalProperties("interfaceOnly", "true")
