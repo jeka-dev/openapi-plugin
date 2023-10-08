@@ -6,6 +6,15 @@
 
 == COMPILE ==
 
+## Needed for server generated code
+org.springframework.boot:spring-boot-starter-web
+org.springdoc:springdoc-openapi-common:1.7.0
+org.openapitools:jackson-databind-nullable:0.2.6
+
+## Needed for client generated code
+jakarta.annotation:jakarta.annotation-api:2.1.1
+com.fasterxml.jackson.core:jackson-annotations:2.15.2
+
 == RUNTIME ==
 
 == TEST ==

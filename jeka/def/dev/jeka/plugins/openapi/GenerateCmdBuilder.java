@@ -42,6 +42,8 @@ public class GenerateCmdBuilder {
 
     public static final String TYPE_MAPPINGS = "--type-mappings";
 
+    public static final String GLOBAL_PROPERTY = "--global-property";
+
     private List<String> args = new LinkedList();
 
     private StringBuilder additionalProperties = new StringBuilder();
@@ -49,6 +51,8 @@ public class GenerateCmdBuilder {
     private StringBuilder importMappings = new StringBuilder();
 
     private StringBuilder typeMappings = new StringBuilder();
+
+    private boolean generateTests = false;
 
     public static GenerateCmdBuilder of(String generatorName, String specLocation) {
         GenerateCmdBuilder builder = new GenerateCmdBuilder();
@@ -117,6 +121,9 @@ public class GenerateCmdBuilder {
         if (typeMappings.length() > 0) {
             result.add(TYPE_MAPPINGS + "=" + typeMappings);
         }
+        result.add(ADDITIONAL_PROPERTIES + "=sourceFolder=/");
+        result.add(GLOBAL_PROPERTY);
+        result.add("modelTests=false,apiTests=false");
         return result;
     }
 }

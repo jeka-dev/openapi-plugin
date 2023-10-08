@@ -1,0 +1,3 @@
+#!/bin/sh
+
+/Users/jerome/IdeaProjects/openapi-plugin/jekaw $@

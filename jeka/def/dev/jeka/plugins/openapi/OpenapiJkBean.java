@@ -5,9 +5,9 @@ import dev.jeka.core.api.depmanagement.JkRepoProperties;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.project.JkSourceGenerator;
 import dev.jeka.core.api.system.JkLog;
+import dev.jeka.core.api.system.JkProperties;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkDoc;
-import dev.jeka.core.tool.JkRuntime;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 import lombok.RequiredArgsConstructor;
 
@@ -59,19 +59,14 @@ public class OpenapiJkBean extends JkBean {
     }
 
     public OpenapiJkBean() {
-        ProjectJkBean projectKBean = this.getRuntime().getBeanOptional(ProjectJkBean.class).orElse(null);
-        if (projectKBean != null) {
-            projectKBean.lately(project -> {
-                if (autoGenerate) {
-                    for (String command : commands(this.getRuntime())) {
-                        project.compilation.addSourceGenerator(new CmdLineGenerator(command));
-                    }
+        ProjectJkBean projectKBean = this.getBean(ProjectJkBean.class);
+        projectKBean.lately(project -> {
+            if (autoGenerate) {
+                for (String command : commands(this.getRuntime().getProperties())) {
+                    project.compilation.addSourceGenerator(new CmdLineGenerator(command));
                 }
-            });
-        } else {
-            JkLog.info("No project KBean has been declared prior openapi plugin instantiation." +
-                    " No openapi source generator will be appended from properties openapi.gen.XXX.");
-        }
+            }
+        });
     }
 
     public JkOpenApiSourceGenerator addSourceGenerator(JkProject project, String generatorName, String specLocation) {
@@ -119,6 +114,9 @@ public class OpenapiJkBean extends JkBean {
         protected void generate(JkProject project, Path generatedSourceDir) {
             JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
             String effectiveCmdLine = command + " " + GenerateCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
+            effectiveCmdLine = effectiveCmdLine + " " + GenerateCmdBuilder.ADDITIONAL_PROPERTIES
+                    + "=sourceFolder=/";
+            effectiveCmdLine = effectiveCmdLine + " --global-property modelTests=false,apiTests=false";
             if (JkLog.isVerbose()) {
                 effectiveCmdLine = effectiveCmdLine + " --verbose";
             }
@@ -129,10 +127,11 @@ public class OpenapiJkBean extends JkBean {
         public String toString() {
             return "OpenapiKBeanGenerator";
         }
+
     }
 
-    private static List<String> commands(JkRuntime runtime) {
-        return new LinkedList<>(runtime.getProperties().getAllStartingWith("openapi.gen.", false).values());
+    private static List<String> commands(JkProperties properties) {
+        return new LinkedList<>(properties.getAllStartingWith("openapi.gen.", false).values());
     }
 
 }
