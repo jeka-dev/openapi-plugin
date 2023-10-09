@@ -75,5 +75,14 @@ public class SampleBuild_Programmatic extends JkBean {
 
 See project example [here](./sample-props).
 
+## Developers
+
+### How to release ?
+
+Just use the [github release mechanism](https://github.com/jeka-dev/openapi-plugin/releases).
+Creating a release implies creating a tag, that will trigger a build and a publication on Maven Central.
+
+
+
 
 
