@@ -63,6 +63,8 @@ class Build extends JkBean {
                     .setProjectUrl("https://jeka.dev")
                     .setScmUrl("https://github.com/jerkar/jeka.git")
                     .addApache2License();
+        gitKBean.handleVersioning(project, false);
+
 
         JkJekaVersionCompatibilityChecker.setCompatibilityRange(project.packaging.manifest,
                 "0.10.26",
