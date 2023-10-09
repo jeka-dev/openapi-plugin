@@ -16,6 +16,7 @@ import dev.jeka.core.api.tooling.JkGitProcess;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkInjectClasspath;
 import dev.jeka.core.tool.JkInjectProperty;
+import dev.jeka.core.tool.JkJekaVersionCompatibilityChecker;
 import dev.jeka.core.tool.builtins.git.GitJkBean;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
 
@@ -62,6 +63,10 @@ class Build extends JkBean {
                     .setProjectUrl("https://jeka.dev")
                     .setScmUrl("https://github.com/jerkar/jeka.git")
                     .addApache2License();
+
+        JkJekaVersionCompatibilityChecker.setCompatibilityRange(project.packaging.manifest,
+                "0.10.26",
+                "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
     }
 
     private JkRepoSet publishRepos() {

@@ -16,7 +16,7 @@ class ControllerIT {
    private MockMvc mvc;
 
     @Test
-    void helloWorld() throws Exception {
+    void getPet1Test() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/pet/1"))
                 .andExpect(MockMvcResultMatchers.status().is(200));
     }
