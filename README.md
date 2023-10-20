@@ -29,7 +29,7 @@ jeka.cmd._append=@dev.jeka:openapi-plugin:0.10.28-0 project#
 # Specify the version of openapi-generator-cli to uset
 openapi#cliVersion=7.0.1
 
-# Append a source generator to the project based on the following command line.
+# Append a source generator, called 'myServer', to the project based on the following command line.
 # The sources will be generated automatically prior compilation
 # Any property formatted as openapi.gen.xxx will be taken in account
 openapi.gen.myServer=generate -g spring \
