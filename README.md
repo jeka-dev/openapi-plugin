@@ -1,4 +1,4 @@
-![Build Status](https://github.com/jeka-dev/openapi-plugin/actions/workflows/push-master.yml/badge.svg)
+![Build Status](https://github.com/jeka-dev/openapi-plugin/actions/workflows/main.yml/badge.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/dev.jeka/openapi-plugin)](https://search.maven.org/search?q=g:%22dev.jeka%22%20AND%20a:%22openapi-plugin%22)
 
 # Openapi generator for JeKa
