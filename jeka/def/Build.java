@@ -1,33 +1,18 @@
 import dev.jeka.core.api.crypto.gpg.JkGpg;
-import dev.jeka.core.api.depmanagement.JkDependencySet;
 import dev.jeka.core.api.depmanagement.JkRepo;
 import dev.jeka.core.api.depmanagement.JkRepoSet;
-import dev.jeka.core.api.depmanagement.artifact.JkStandardFileArtifactProducer;
-import dev.jeka.core.api.depmanagement.publication.JkMavenPublication;
-import dev.jeka.core.api.depmanagement.resolution.JkDependencyResolver;
-import dev.jeka.core.api.file.JkPathSequence;
 import dev.jeka.core.api.file.JkPathTree;
-import dev.jeka.core.api.java.JkJarPacker;
-import dev.jeka.core.api.java.JkJavaCompileSpec;
-import dev.jeka.core.api.java.JkJavaCompiler;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkLocator;
-import dev.jeka.core.api.tooling.JkGitProcess;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkInjectClasspath;
 import dev.jeka.core.tool.JkInjectProperty;
 import dev.jeka.core.tool.JkJekaVersionCompatibilityChecker;
-import dev.jeka.core.tool.builtins.git.GitJkBean;
+import dev.jeka.core.tool.builtins.git.JkVersionFromGit;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
-
-import java.nio.file.Path;
 
 @JkInjectClasspath("org.projectlombok:lombok:1.18.24")
 class Build extends JkBean {
-
-    ProjectJkBean projectKBean = getBean(ProjectJkBean.class);
-
-    GitJkBean gitKBean = this.getBean(GitJkBean.class);
 
     @JkInjectProperty("OSSRH_USER")
     public String ossrhUser;
@@ -39,8 +24,7 @@ class Build extends JkBean {
     public String secretRingPassword;
 
     Build() {
-        projectKBean.lately(this::configure);
-        gitKBean.configureProjectVersion = true;
+        getBean(ProjectJkBean.class).lately(this::configure);
     }
 
     private void configure(JkProject project) {
@@ -63,11 +47,10 @@ class Build extends JkBean {
                     .setProjectUrl("https://jeka.dev")
                     .setScmUrl("https://github.com/jerkar/jeka.git")
                     .addApache2License();
-        gitKBean.handleVersioning(project, false);
-
+        JkVersionFromGit.of().handleVersioning(project);
 
         JkJekaVersionCompatibilityChecker.setCompatibilityRange(project.packaging.manifest,
-                "0.10.26",
+                "0.10.28",
                 "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
     }
 
