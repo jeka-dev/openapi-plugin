@@ -1,3 +1,6 @@
+![Build Status](https://github.com/jeka-dev/openapi-plugin/actions/workflows/main.yml/badge.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/dev.jeka/openapi-plugin)](https://search.maven.org/search?q=g:%22dev.jeka%22%20AND%20a:%22openapi-plugin%22)
+
 # Openapi generator for JeKa
 
 Openapi plugin for [JeKa](https://jeka.dev) acts as a thin wrapper around [openapi-generator-cli](https://openapi-generator.tech/docs/usage).
