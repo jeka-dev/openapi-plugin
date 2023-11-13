@@ -8,11 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Builder for constructing a 'generate' command line.
+ * Builder for constructing an openAPi 'generate' command line.
  * See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
+ *
+ * This class is meant to be used in conjunction with {@link JkOpenApiGeneratorCli},
+ * {@link JkOpenApiSourceGenerator} or {@link OpenapiJkBean}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class GenerateCmdBuilder {
+public class JkOpenapiCmdBuilder {
 
     public static final String INPUT_SPEC = "--input-spec";
 
@@ -48,25 +51,27 @@ public class GenerateCmdBuilder {
 
     private StringBuilder additionalProperties = new StringBuilder();
 
+    private StringBuilder globalProperties = new StringBuilder();
+
     private StringBuilder importMappings = new StringBuilder();
 
     private StringBuilder typeMappings = new StringBuilder();
 
     private boolean generateTests = false;
 
-    public static GenerateCmdBuilder of(String generatorName, String specLocation) {
-        GenerateCmdBuilder builder = new GenerateCmdBuilder();
+    public static JkOpenapiCmdBuilder of(String generatorName, String specLocation) {
+        JkOpenapiCmdBuilder builder = new JkOpenapiCmdBuilder();
         builder.add(GENERATOR_NAME, generatorName);
         builder.add(INPUT_SPEC, specLocation);
         return builder;
     }
 
-    public GenerateCmdBuilder add(String ...args) {
+    public JkOpenapiCmdBuilder add(String ...args) {
         Arrays.stream(args).forEach(item -> this.args.add(item));
         return this;
     }
 
-    public GenerateCmdBuilder addApiAndModelPackage(String packageName) {
+    public JkOpenapiCmdBuilder addApiAndModelPackage(String packageName) {
         return add(API_PACKAGE, packageName).add(MODEL_PACKAGE, packageName);
     }
 
@@ -75,7 +80,7 @@ public class GenerateCmdBuilder {
     /**
      * Adds additional property specific to the generator. See <a href="https://openapi-generator.tech/docs/generators">documentation</a>.
      */
-    public GenerateCmdBuilder addAdditionalProperties(String key, String value) {
+    public JkOpenapiCmdBuilder addAdditionalProperties(String key, String value) {
         if (additionalProperties.length() > 0) {
             additionalProperties.append(",");
         }
@@ -84,9 +89,21 @@ public class GenerateCmdBuilder {
     }
 
     /**
+     * Adds global property specific to the generator.
+     * See <a href="https://openapi-generator.tech/docs/globals">documentation</a>.
+     */
+    public JkOpenapiCmdBuilder addGlobalProperties(String key, String value) {
+        if (globalProperties.length() > 0) {
+            globalProperties.append(",");
+        }
+        globalProperties.append(key).append("=").append(value);
+        return  this;
+    }
+
+    /**
      * Adds import-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
-    public GenerateCmdBuilder addImportMapping(String primitiveTypeName, String fullQualifiedClassName) {
+    public JkOpenapiCmdBuilder addImportMapping(String primitiveTypeName, String fullQualifiedClassName) {
         if (importMappings.length() > 0) {
             importMappings.append(",");
         }
@@ -97,7 +114,7 @@ public class GenerateCmdBuilder {
     /**
      * Adds type-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
-    public GenerateCmdBuilder addTypeMapping(String primitiveTypeName, String fullQualifiedClassName) {
+    public JkOpenapiCmdBuilder addTypeMapping(String primitiveTypeName, String fullQualifiedClassName) {
         if (typeMappings.length() > 0) {
             typeMappings.append(",");
         }
@@ -114,6 +131,9 @@ public class GenerateCmdBuilder {
         result.addAll(this.args);
         if (additionalProperties.length() > 0) {
             result.add(ADDITIONAL_PROPERTIES + "=" + additionalProperties);
+        }
+        if (globalProperties.length() > 0) {
+            result.add(GLOBAL_PROPERTY + "=" + globalProperties);
         }
         if (importMappings.length() > 0) {
             result.add(IMPORT_MAPPINGS + "=" + importMappings);

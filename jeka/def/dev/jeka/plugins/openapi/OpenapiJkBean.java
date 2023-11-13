@@ -23,7 +23,7 @@ public class OpenapiJkBean extends JkBean {
 
     @JkDoc("Version of openapi-generator-cli to use.")
     @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator:")
-    public String cliVersion = JkOpenApiGeneratorCmd.DEFAULT_CLI_VERSION;
+    public String cliVersion = JkOpenApiGeneratorCli.DEFAULT_CLI_VERSION;
 
     @JkDoc("If true, the specified cmdLine will be run to generate sources at compile time")
     public boolean autoGenerate = true;
@@ -96,10 +96,11 @@ public class OpenapiJkBean extends JkBean {
 
     private int exec(String cmdLine) {
         JkRepoProperties repoProperties = JkRepoProperties.of(this.getRuntime().getProperties());
-        JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(repoProperties.getDownloadRepos(), cliVersion);
+        JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(repoProperties.getDownloadRepos(), cliVersion);
         return cmd.execCmdLine(cmdLine);
     }
 
+    // Source Generator from pure command line. Needed only for command expressed through properties.
     @RequiredArgsConstructor
     private class CmdLineGenerator extends JkSourceGenerator {
 
@@ -112,9 +113,9 @@ public class OpenapiJkBean extends JkBean {
 
         @Override
         protected void generate(JkProject project, Path generatedSourceDir) {
-            JkOpenApiGeneratorCmd cmd = JkOpenApiGeneratorCmd.of(project.dependencyResolver.getRepos(), cliVersion);
-            String effectiveCmdLine = command + " " + GenerateCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
-            effectiveCmdLine = effectiveCmdLine + " " + GenerateCmdBuilder.ADDITIONAL_PROPERTIES
+            JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
+            String effectiveCmdLine = command + " " + JkOpenapiCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
+            effectiveCmdLine = effectiveCmdLine + " " + JkOpenapiCmdBuilder.ADDITIONAL_PROPERTIES
                     + "=sourceFolder=/";
             effectiveCmdLine = effectiveCmdLine + " --global-property modelTests=false,apiTests=false";
             if (JkLog.isVerbose()) {

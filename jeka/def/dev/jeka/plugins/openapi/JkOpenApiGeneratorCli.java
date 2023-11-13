@@ -9,7 +9,10 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
-public class JkOpenApiGeneratorCmd {
+/**
+ * Provides convenient methods to invoke openApi CLI.
+ */
+public class JkOpenApiGeneratorCli {
 
     public static final String DEFAULT_CLI_VERSION = "7.0.1";
 
@@ -17,13 +20,13 @@ public class JkOpenApiGeneratorCmd {
 
     private final String cliVersion;
 
-    private JkOpenApiGeneratorCmd(JkRepoSet repos, String cliVersion) {
+    private JkOpenApiGeneratorCli(JkRepoSet repos, String cliVersion) {
         this.repos = repos;
         this.cliVersion = cliVersion;
     }
 
-    public final static JkOpenApiGeneratorCmd of(JkRepoSet repoSet, String cliVersion) {
-        return new JkOpenApiGeneratorCmd(repoSet, cliVersion);
+    public final static JkOpenApiGeneratorCli of(JkRepoSet repoSet, String cliVersion) {
+        return new JkOpenApiGeneratorCli(repoSet, cliVersion);
     }
 
     public int exec(String ...args) {
