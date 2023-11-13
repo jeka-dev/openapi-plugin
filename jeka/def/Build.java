@@ -49,6 +49,7 @@ class Build extends JkBean {
                 .setModuleId("dev.jeka:openapi-plugin")
                 .setPublishRepos(publishRepos())
                 .pomMetadata
+                    .setProjectName("OpenApi plugin for JeKa")
                     .setProjectDescription("OpenApi plugin for JeKa")
                     .addGithubDeveloper("Jerome Angibaud", "djeang_dev@yahoo.fr")
                     .setProjectUrl("https://github.com/jeka-dev/openapi-plugin")
