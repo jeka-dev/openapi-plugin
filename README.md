@@ -11,7 +11,7 @@ This plugin offers several out-of-the-box commands to invoke *openapi-generator-
 To see list of provided commands and options, execute :
 
 ```bash
-jeka @dev.jeka:openapi-plugin:0.10.28.0 openapi#help
+jeka @dev.jeka:openapi-plugin:0.10.38.0 openapi#help
 ````
 Furthermore, this plugin offers convenient methods to link source code generation with any project KBean.
 
@@ -24,9 +24,10 @@ You can append openapi source generator to your working project, just declaring 
 
 ```properties
 # Import this plugin into JeKa classpath
-jeka.cmd._append=@dev.jeka:openapi-plugin:0.10.28.0 project#
+jeka.classpath.inject=@dev.jeka:openapi-plugin:0.10.38.0
+jeka.default.kbean=project
 
-# Specify the version of openapi-generator-cli to uset
+# Specify the version of openapi-generator-cli to set
 openapi#cliVersion=7.0.1
 
 # Append a source generator, called 'myServer', to the project based on the following command line.
@@ -47,13 +48,13 @@ See project example [here](./sample-props).
 
 ## Using programmatic method
 
-Alternativelly, you can leverage of the fluent api to link your built project with an openapi 
+Alternatively, you can leverage of the fluent api to link your built project with an openapi 
 source code generator, as demonstrated below.
 
 ```java
 import dev.jeka.core.tool.JkInjectClasspath;
 
-@JkInjectClasspath("dev.jeka:openapi-plugin:0.10.28.0")
+@JkInjectClasspath("dev.jeka:openapi-plugin:0.10.38.0")
 public class SampleBuild_Programmatic extends JkBean {
 
     private static final String SPEC_URL = "https://petstore.swagger.io/v2/swagger.json";
