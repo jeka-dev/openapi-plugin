@@ -1,5 +1,6 @@
 package dev.jeka.plugins.openapi;
 
+import dev.jeka.core.api.depmanagement.JkDepSuggest;
 import dev.jeka.core.api.project.JkProject;
 
 public class JkOpenApi {
@@ -10,7 +11,7 @@ public class JkOpenApi {
         this.version = version;
     }
 
-    public static JkOpenApi ofVersion(String version) {
+    public static JkOpenApi ofVersion(@JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String version) {
         return new JkOpenApi(version);
     }
 

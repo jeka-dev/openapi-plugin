@@ -1,6 +1,7 @@
 package dev.jeka.plugins.openapi;
 
 import dev.jeka.core.api.depmanagement.JkCoordinateFileProxy;
+import dev.jeka.core.api.depmanagement.JkDepSuggest;
 import dev.jeka.core.api.depmanagement.JkRepoSet;
 import dev.jeka.core.api.java.JkJavaProcess;
 import dev.jeka.core.api.utils.JkUtilsString;
@@ -20,12 +21,14 @@ public class JkOpenApiGeneratorCli {
 
     private final String cliVersion;
 
-    private JkOpenApiGeneratorCli(JkRepoSet repos, String cliVersion) {
+    private JkOpenApiGeneratorCli(JkRepoSet repos,
+                                  @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String cliVersion) {
         this.repos = repos;
         this.cliVersion = cliVersion;
     }
 
-    public final static JkOpenApiGeneratorCli of(JkRepoSet repoSet, String cliVersion) {
+    public final static JkOpenApiGeneratorCli of(JkRepoSet repoSet,
+                                                 @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String cliVersion) {
         return new JkOpenApiGeneratorCli(repoSet, cliVersion);
     }
 
