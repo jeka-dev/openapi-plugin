@@ -4,6 +4,7 @@ import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkLog;
 import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.builtins.project.ProjectJkBean;
+import dev.jeka.plugins.openapi.JkOpenApi;
 import dev.jeka.plugins.openapi.JkOpenapiCmdBuilder;
 import dev.jeka.plugins.openapi.OpenapiJkBean;
 
@@ -14,24 +15,27 @@ public class SampleBuild_KBeanProgrammatic extends JkBean {
 
     private static final String SPEC_URL = "https://petstore.swagger.io/v2/swagger.json";
 
-    ProjectJkBean projectBean = getBean(ProjectJkBean.class).lately(this::configure);
+    private static final String OPENAPI_CLI_VERSION = "7.0.1";
 
-    OpenapiJkBean openApi = getBean(OpenapiJkBean.class).setCliVersion("7.0.1");
 
-    private void configure(JkProject project) {
-        openApi.addSourceGenerator(project, "spring", SPEC_URL).customize(cmdBuilder -> cmdBuilder
-                .addApiAndModelPackage("com.mycompany")
-                .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
-                .add("--language-specific-primitives=Pet")
-                .addImportMapping("Pet", "com.yourpackage.models.Pet")
-                .addImportMapping("DateTime", "java.time.LocalDateTime")
-                .addTypeMapping("DateTime", "java.time.LocalDateTime")
+    private JkProject project() {
+        JkProject project = JkProject.of();
+        //...
+        JkOpenApi.ofVersion(OPENAPI_CLI_VERSION).addSourceGenerator(project, "spring", SPEC_URL)
+                .customize(cmdBuilder -> cmdBuilder
+                    .addApiAndModelPackage("com.mycompany")
+                    .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                    .addAdditionalProperties("useSpringBoot3", "true")
+                    .add("--language-specific-primitives=Pet")
+                    .addImportMapping("Pet", "com.yourpackage.models.Pet")
+                    .addImportMapping("DateTime", "java.time.LocalDateTime")
+                    .addTypeMapping("DateTime", "java.time.LocalDateTime")
         );
+        return project;
     }
 
-    public void gen() {
-        cleanOutput();
-        projectBean.getProject().compilation.generateSources();
+    public void genCode() {
+        project().compilation.generateSources();
     }
 
 }
