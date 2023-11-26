@@ -11,10 +11,16 @@ public class JkOpenApi {
         this.version = version;
     }
 
+    /**
+     * Creates a {@link JkOpenApi} using the specified openApi cli version.
+     */
     public static JkOpenApi ofVersion(@JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String version) {
         return new JkOpenApi(version);
     }
 
+    /**
+     * Creates a {@link JkOpenApi} using the default openApi cli version.
+     */
     public static JkOpenApi ofDefaultVersion() {
         return ofVersion(JkOpenApiGeneratorCli.DEFAULT_CLI_VERSION);
     }
