@@ -12,7 +12,7 @@ import java.util.List;
  * See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
  *
  * This class is meant to be used in conjunction with {@link JkOpenApiGeneratorCli},
- * {@link JkOpenApiSourceGenerator} or {@link OpenapiJkBean}.
+ * {@link JkOpenApiSourceGenerator} or {@link OpenapiKBean}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JkOpenapiCmdBuilder {

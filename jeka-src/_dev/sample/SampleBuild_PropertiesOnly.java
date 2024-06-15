@@ -1,18 +1,19 @@
-package sample;
+package _dev.sample;
 
 import dev.jeka.core.api.file.JkPathTree;
-import dev.jeka.core.tool.JkBean;
-import dev.jeka.core.tool.builtins.project.ProjectJkBean;
-import dev.jeka.plugins.openapi.OpenapiJkBean;
+import dev.jeka.core.api.project.JkProject;
+import dev.jeka.core.tool.KBean;
+import dev.jeka.core.tool.builtins.project.ProjectKBean;
+import dev.jeka.plugins.openapi.OpenapiKBean;
 
 /**
  * Sample using only properties of OpenApiJkBean
  */
-public class SampleBuild_PropertiesOnly extends JkBean {
+public class SampleBuild_PropertiesOnly extends KBean {
 
-    ProjectJkBean projectBean = getBean(ProjectJkBean.class);
+    JkProject project = load(ProjectKBean.class).project;
 
-    OpenapiJkBean openApi = getBean(OpenapiJkBean.class);
+    OpenapiKBean openApi = load(OpenapiKBean.class);
 
     SampleBuild_PropertiesOnly() {
 
@@ -27,9 +28,9 @@ public class SampleBuild_PropertiesOnly extends JkBean {
 
     // For testing purpose only
     public void gen() {
-        JkPathTree.of(projectBean.getProject().getOutputDir()).deleteContent();
-        projectBean.getProject().compilation.skipJavaCompilation();
-        projectBean.getProject().compilation.run();
+        JkPathTree.of(project.getOutputDir()).deleteContent();
+        project.compilation.skipJavaCompilation();
+        project.compilation.run();
     }
 
 }

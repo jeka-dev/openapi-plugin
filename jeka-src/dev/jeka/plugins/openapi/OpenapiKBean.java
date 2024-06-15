@@ -3,12 +3,12 @@ package dev.jeka.plugins.openapi;
 import dev.jeka.core.api.depmanagement.JkDepSuggest;
 import dev.jeka.core.api.depmanagement.JkRepoProperties;
 import dev.jeka.core.api.project.JkProject;
-import dev.jeka.core.api.project.JkSourceGenerator;
+import dev.jeka.core.api.project.JkProjectSourceGenerator;
 import dev.jeka.core.api.system.JkLog;
 import dev.jeka.core.api.system.JkProperties;
-import dev.jeka.core.tool.JkBean;
 import dev.jeka.core.tool.JkDoc;
-import dev.jeka.core.tool.builtins.project.ProjectJkBean;
+import dev.jeka.core.tool.KBean;
+import dev.jeka.core.tool.builtins.project.ProjectKBean;
 import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @JkDoc("Provides project configuration for generating code from openApi specifications.")
-public class OpenapiJkBean extends JkBean {
+public class OpenapiKBean extends KBean {
 
     @JkDoc("The command line arguments in conjunction with 'exec' method.")
     public String cmdLine;
@@ -58,26 +58,27 @@ public class OpenapiJkBean extends JkBean {
         exec("config-help -g java");
     }
 
-    public OpenapiJkBean() {
-        ProjectJkBean projectKBean = this.getBean(ProjectJkBean.class);
-        projectKBean.lately(project -> {
+    @Override
+    protected void init() {
+        ProjectKBean projectKBean = getRunbase().find(ProjectKBean.class).orElse(null);
+        if (projectKBean != null) {
             if (autoGenerate) {
-                for (String command : commands(this.getRuntime().getProperties())) {
-                    project.compilation.addSourceGenerator(new CmdLineGenerator(command));
+                for (String command : commands(this.getRunbase().getProperties())) {
+                    projectKBean.project.compilation.addSourceGenerator(new CmdLineGenerator(command));
                 }
             }
-        });
+        }
     }
 
     private int exec(String cmdLine) {
-        JkRepoProperties repoProperties = JkRepoProperties.of(this.getRuntime().getProperties());
+        JkRepoProperties repoProperties = JkRepoProperties.of(this.getRunbase().getProperties());
         JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(repoProperties.getDownloadRepos(), cliVersion);
         return cmd.execCmdLine(cmdLine);
     }
 
     // Source Generator from pure command line. Needed only for command expressed through properties.
     @RequiredArgsConstructor
-    private class CmdLineGenerator extends JkSourceGenerator {
+    private class CmdLineGenerator extends JkProjectSourceGenerator {
 
         private final String command;
 

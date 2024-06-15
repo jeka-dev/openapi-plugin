@@ -1,4 +1,4 @@
-![Build Status](https://github.com/jeka-dev/openapi-plugin/actions/workflows/main.yml/badge.svg)
+![_dev.sample.Build Status](https://github.com/jeka-dev/openapi-plugin/actions/workflows/main.yml/badge.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/dev.jeka/openapi-plugin)](https://search.maven.org/search?q=g:%22dev.jeka%22%20AND%20a:%22openapi-plugin%22)
 
 # Openapi generator for JeKa
@@ -44,7 +44,7 @@ openapi.gen.myClient=generate -g client \
   -i https://my.spec.server/an-api.json
 ```
 
-See project example [here](./sample-props).
+See project example [here](./_dev.sample-props).
 
 ## Using programmatic method
 
@@ -84,7 +84,7 @@ public class SampleBuild_Programmatic extends JkBean {
 }
 ```
 
-See project example [here](./sample-props).
+See project example [here](./_dev.sample-props).
 
 ## Developers
 

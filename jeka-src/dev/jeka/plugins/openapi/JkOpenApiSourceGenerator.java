@@ -1,7 +1,7 @@
 package dev.jeka.plugins.openapi;
 
 import dev.jeka.core.api.project.JkProject;
-import dev.jeka.core.api.project.JkSourceGenerator;
+import dev.jeka.core.api.project.JkProjectSourceGenerator;
 import dev.jeka.core.api.system.JkLog;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,11 +10,11 @@ import java.nio.file.Path;
 import java.util.function.Consumer;
 
 /**
- * A {@link JkSourceGenerator} to be added to projects needing an openApi source
+ * A {@link JkProjectSourceGenerator} to be added to projects needing an openApi source
  * generation.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class JkOpenApiSourceGenerator extends JkSourceGenerator {
+public class JkOpenApiSourceGenerator extends JkProjectSourceGenerator {
 
     private final String generatorName;
 
@@ -25,7 +25,7 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
     private Consumer<JkOpenapiCmdBuilder> customizer = generateCmdBuilder -> {};
 
     /**
-     * Creates a {@link JkSourceGenerator} instance, specifying the generator to use, and
+     * Creates a {@link JkProjectSourceGenerator} instance, specifying the generator to use, and
      * the specification location.
      * @param generatorName on generator selected from <a href="https://openapi-generator.tech/docs/generators">this list</a>
      * @param specLocation a file path or an url
@@ -35,7 +35,7 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
     }
 
     /**
-     * Creates a {@link JkSourceGenerator} instance for generating spring server code.
+     * Creates a {@link JkProjectSourceGenerator} instance for generating spring server code.
      * @param specLocation a file path or an url
      */
     public static JkOpenApiSourceGenerator ofSpringServer(String specLocation) {
@@ -43,7 +43,7 @@ public class JkOpenApiSourceGenerator extends JkSourceGenerator {
     }
 
     /**
-     * Creates a {@link JkSourceGenerator} instance for generating Java client code.
+     * Creates a {@link JkProjectSourceGenerator} instance for generating Java client code.
      * @param specLocation a file path or an url
      */
     public static JkOpenApiSourceGenerator ofJavaClient(String specLocation) {

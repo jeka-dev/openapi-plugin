@@ -33,7 +33,7 @@ public class JkOpenApiGeneratorCli {
     }
 
     public int exec(String ...args) {
-        return javaProcess().addParams(args).exec();
+        return javaProcess().addParams(args).exec().getExitCode();
     }
 
     public int exec(List<String> args) {
@@ -44,13 +44,13 @@ public class JkOpenApiGeneratorCli {
      * Executes the specified command line as <li>generate -g go --additional-properties=prependFormOrBodyParameters=true -o out -i petstore.yaml</li>
      */
     public int execCmdLine(String args) {
-        return exec(Arrays.asList(JkUtilsString.translateCommandline(args)));
+        return exec(Arrays.asList(JkUtilsString.parseCommandline(args)));
     }
 
     private JkJavaProcess javaProcess() {
         return JkJavaProcess.ofJavaJar(cliJar(), null)
                 .setLogCommand(true)
-                .setLogOutput(true);
+                .setLogWithJekaDecorator(true);
     }
 
     private Path cliJar() {
