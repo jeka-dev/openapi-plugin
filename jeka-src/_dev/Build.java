@@ -26,6 +26,8 @@ class Build extends KBean {
 
     private final BaseKBean baseKBean = load(BaseKBean.class);
 
+    private final MavenKBean mavenKBean = load(MavenKBean.class);
+
     protected void init() {
 
         JkJekaVersionRanges.setCompatibilityRange(baseKBean.getManifest(),
@@ -33,7 +35,7 @@ class Build extends KBean {
                 "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
 
         // Publish on ossrh
-        load(MavenKBean.class).getMavenPublication()
+        mavenKBean.getMavenPublication()
                 .setModuleId("dev.jeka:openapi-plugin")
                 .setRepos(publishRepos())
                 .pomMetadata
