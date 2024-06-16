@@ -18,17 +18,18 @@ Furthermore, this plugin offers convenient methods to link source code generatio
 The generation match strictly the openapi-generator-cli syntax, so you can refer to [the official documentation](https://openapi-generator.tech/docs/usage/#generate) 
 to generate sources for any target technology without limitations.
 
-## Using local.properties
+## Using jeka.properties
 
 You can append openapi source generator to your working project, just declaring properties in your *local.properties* file, following the below example.
 
 ```properties
 # Import this plugin into JeKa classpath
-jeka.classpath.inject=@dev.jeka:openapi-plugin:0.10.38.0
+jeka.inject.classpath=dev.jeka:openapi-plugin:0.11.0-1
 jeka.default.kbean=project
 
 # Specify the version of openapi-generator-cli to set
-openapi#cliVersion=7.0.1
+@openapi=
+@openapi.cliVersion=7.0.1
 
 # Append a source generator, called 'myServer', to the project based on the following command line.
 # The sources will be generated automatically prior compilation
