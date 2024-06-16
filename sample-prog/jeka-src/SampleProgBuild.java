@@ -11,11 +11,10 @@ import dev.jeka.plugins.springboot.SpringbootKBean;
 @JkInjectClasspath("dev.jeka:springboot-plugin")
 class SampleProgBuild extends KBean {
 
-    final SpringbootKBean springbootBean = load(SpringbootKBean.class);
-
     final OpenapiKBean openapiKBean = load(OpenapiKBean.class);
 
     protected void init() {
+        load(SpringbootKBean.class);
         openapiKBean.cliVersion = "7.0.1";
         JkProject project = load(ProjectKBean.class).project;
         project.flatFacade()
