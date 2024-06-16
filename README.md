@@ -25,7 +25,6 @@ You can append openapi source generator to your working project, just declaring 
 ```properties
 # Import this plugin into JeKa classpath
 jeka.inject.classpath=dev.jeka:openapi-plugin:0.11.0-1
-jeka.default.kbean=project
 
 # Specify the version of openapi-generator-cli to set
 @openapi=
