@@ -20,5 +20,4 @@ jobs:
         OSSRH_USER: ${{ secrets.OSSRH_USER }}
         OSSRH_PWD: ${{ secrets.OSSRH_PWD }}
         JEKA_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: "./jeka base: pack maven: publish"

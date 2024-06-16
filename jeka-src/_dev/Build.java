@@ -2,6 +2,7 @@ package _dev;
 
 import dev.jeka.core.api.crypto.gpg.JkGpgSigner;
 import dev.jeka.core.api.depmanagement.JkRepoSet;
+import dev.jeka.core.api.tooling.git.JkGit;
 import dev.jeka.core.tool.JkInjectClasspath;
 import dev.jeka.core.tool.JkInjectProperty;
 import dev.jeka.core.tool.JkJekaVersionRanges;
@@ -47,8 +48,7 @@ class Build extends KBean {
                     .addApache2License();
         load(NexusKBean.class); // Loading this KBean will automatically configure MavenKBean for publishing on Nexus
 
-        load(GitKBean.class).handleVersioning = true;
-
+        baseKBean.setVersionSupplier(JkGit.of()::getJkVersionFromTag);
     }
 
     private JkRepoSet publishRepos() {
