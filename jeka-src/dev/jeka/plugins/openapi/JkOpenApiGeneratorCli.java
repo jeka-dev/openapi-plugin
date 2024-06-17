@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class JkOpenApiGeneratorCli {
 
-    public static final String DEFAULT_CLI_VERSION = "7.0.1";
+    public static final String DEFAULT_CLI_VERSION = "7.6.0";
 
     private final JkRepoSet repos;
 

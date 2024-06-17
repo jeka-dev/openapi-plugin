@@ -8,7 +8,6 @@ import dev.jeka.core.tool.JkInjectProperty;
 import dev.jeka.core.tool.JkJekaVersionRanges;
 import dev.jeka.core.tool.KBean;
 import dev.jeka.core.tool.builtins.base.BaseKBean;
-import dev.jeka.core.tool.builtins.tooling.git.GitKBean;
 import dev.jeka.core.tool.builtins.tooling.maven.MavenKBean;
 import dev.jeka.plugins.nexus.NexusKBean;
 
@@ -36,9 +35,11 @@ class Build extends KBean {
                 "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
 
         // Publish on ossrh
+        JkGpgSigner gpgSigner = JkGpgSigner.ofStandardProject(getBaseDir());
+        JkRepoSet repos = JkRepoSet.ofOssrhSnapshotAndRelease(ossrhUser, ossrhPwd, gpgSigner);
         mavenKBean.getMavenPublication()
                 .setModuleId("dev.jeka:openapi-plugin")
-                .setRepos(publishRepos())
+                .setRepos(repos)
                 .pomMetadata
                     .setProjectName("OpenApi plugin for JeKa")
                     .setProjectDescription("OpenApi plugin for JeKa")
@@ -49,11 +50,6 @@ class Build extends KBean {
         load(NexusKBean.class); // Loading this KBean will automatically configure MavenKBean for publishing on Nexus
 
         baseKBean.setVersionSupplier(JkGit.of()::getJkVersionFromTag);
-    }
-
-    private JkRepoSet publishRepos() {
-        JkGpgSigner gpgSigner = JkGpgSigner.ofStandardProject(getBaseDir());
-        return JkRepoSet.ofOssrhSnapshotAndRelease(ossrhUser, ossrhPwd, gpgSigner);
     }
 
 }
