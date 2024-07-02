@@ -91,9 +91,37 @@ See project example [here](./_dev.sample-props).
 ### How to release ?
 
 Just use the [github release mechanism](https://github.com/jeka-dev/openapi-plugin/releases).
-Creating a release implies creating a tag, that will trigger a build and a publication on Maven Central.
+Creating a release consists in creating a tag, that will trigger a build and a publication on Maven Central.
 
+### Publication on Maven central
 
+This repository can be used as an example on how to publish on Maven Central.
 
+The only things to do for publishing to Maven Central is :
 
+1. Add following properties to *jeka.properties* :
+```properties
+# Configuration for deploying to Maven central
+@maven.publication.predefinedRepo=OSSRH
+@maven.publication.metadata.projectName=OpenApi plugin for JeKa
+@maven.publication.metadata.projectDescription=OpenApi plugin for JeKa
+@maven.publication.metadata.projectUrl=https://github.com/jeka-dev/openapi-plugin
+@maven.publication.metadata.projectScmUrl=https://github.com/jeka-dev/openapi-plugin.git
+@maven.publication.metadata.licenses=Apache License V2.0:https://www.apache.org/licenses/LICENSE-2.0.html
+@maven.publication.metadata.developers=djeang:djeangdev@yahoo.fr
+
+# Close nexus repo automatically after publication
+@nexus=
+```
+
+2. Set up environment variables like :
+```yaml
+env:
+jeka.repos.publish.username: ${{ secrets.OSSRH_USER }}
+jeka.repos.publish.password: ${{ secrets.OSSRH_PWD }}
+jeka.gpg.secret-key: ${{ secrets.GPG_SECRET_KEY}}
+jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
+```
+
+Just execute `jeka maven: publish` to publish on Maven Central.
 
