@@ -88,6 +88,8 @@ See project example [here](./_dev.sample-props).
 
 ## Developers
 
+The plugin code lies in *jeka-src* and so is built using the *base* KBean instead of *project*.
+
 ### How to release ?
 
 Just use the [github release mechanism](https://github.com/jeka-dev/openapi-plugin/releases).
