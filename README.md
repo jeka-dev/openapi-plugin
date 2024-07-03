@@ -97,7 +97,7 @@ Creating a release consists in creating a tag, that will trigger a build and a p
 
 This repository can be used as an example on how to publish on Maven Central.
 
-The only things to do for publishing to Maven Central is :
+The only things to do for publishing to Maven Central are :
 
 1. Add following properties to *jeka.properties* :
 ```properties
