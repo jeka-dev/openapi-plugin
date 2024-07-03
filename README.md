@@ -103,6 +103,14 @@ The only things to do for publishing to Maven Central are :
 
 1. Add following properties to *jeka.properties* :
 ```properties
+# Download nexus plugin to auto publish after the artifacts are sent to the staging repo
+jeka.inject.classpath=dev.jeka:nexus-plugin
+
+@project.moduleId=my.org:my-project
+
+# version can also be got from Git, see real jeka.properties file
+@project.version=1.0.0
+
 # Configuration for deploying to Maven central
 @maven.publication.predefinedRepo=OSSRH
 @maven.publication.metadata.projectName=OpenApi plugin for JeKa
@@ -112,7 +120,7 @@ The only things to do for publishing to Maven Central are :
 @maven.publication.metadata.licenses=Apache License V2.0:https://www.apache.org/licenses/LICENSE-2.0.html
 @maven.publication.metadata.developers=djeang:djeangdev@yahoo.fr
 
-# Close nexus repo automatically after publication
+# Use Nexus plugin to auto-publish
 @nexus=
 ```
 
@@ -124,6 +132,10 @@ jeka.repos.publish.password: ${{ secrets.OSSRH_PWD }}
 jeka.gpg.secret-key: ${{ secrets.GPG_SECRET_KEY}}
 jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
 ```
+
+The content of `secrets.GPG_SECRET_KEY` has been obtained by executing : `gpg --export-secret-key --armor my-key-name`.
+
+
 
 Just execute `jeka maven: publish` to publish on Maven Central.
 
