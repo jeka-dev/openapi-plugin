@@ -97,7 +97,7 @@ Creating a release consists in creating a tag, that will trigger a build and a p
 
 ### Publication on Maven central
 
-This repository can be used as an example on how to publish on Maven Central.
+This repository can be used as an example for publishing on Maven Central.
 
 The only things to do for publishing to Maven Central are :
 
