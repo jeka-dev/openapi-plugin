@@ -135,7 +135,5 @@ jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
 The content of `secrets.GPG_SECRET_KEY` has been obtained by executing : `gpg --export-secret-key --armor my-key-name`.
 
-
-
 Just execute `jeka maven: publish` to publish on Maven Central.
 

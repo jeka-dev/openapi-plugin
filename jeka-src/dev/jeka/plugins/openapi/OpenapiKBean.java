@@ -77,18 +77,21 @@ public class OpenapiKBean extends KBean {
     }
 
     // Source Generator from pure command line. Needed only for command expressed through properties.
-    @RequiredArgsConstructor
-    private class CmdLineGenerator extends JkProjectSourceGenerator {
+    private class CmdLineGenerator implements JkProjectSourceGenerator {
 
         private final String command;
 
+        CmdLineGenerator(String command) {
+            this.command = command;
+        }
+
         @Override
-        protected String getDirName() {
+        public String getDirName() {
             return "openapi";
         }
 
         @Override
-        protected void generate(JkProject project, Path generatedSourceDir) {
+        public void generate(JkProject project, Path generatedSourceDir) {
             JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
             String effectiveCmdLine = command + " " + JkOpenapiCmdBuilder.OUTPUT_PATH + " " + generatedSourceDir;
             effectiveCmdLine = effectiveCmdLine + " " + JkOpenapiCmdBuilder.ADDITIONAL_PROPERTIES

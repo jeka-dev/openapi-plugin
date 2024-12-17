@@ -13,8 +13,7 @@ import java.util.function.Consumer;
  * A {@link JkProjectSourceGenerator} to be added to projects needing an openApi source
  * generation.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class JkOpenApiSourceGenerator extends JkProjectSourceGenerator {
+public class JkOpenApiSourceGenerator implements JkProjectSourceGenerator {
 
     private final String generatorName;
 
@@ -23,6 +22,11 @@ public class JkOpenApiSourceGenerator extends JkProjectSourceGenerator {
     private String cliVersion = JkOpenApiGeneratorCli.DEFAULT_CLI_VERSION;
 
     private Consumer<JkOpenapiCmdBuilder> customizer = generateCmdBuilder -> {};
+
+    private JkOpenApiSourceGenerator(String generatorName, String inputSpecLocation) {
+        this.generatorName = generatorName;
+        this.inputSpecLocation = inputSpecLocation;
+    }
 
     /**
      * Creates a {@link JkProjectSourceGenerator} instance, specifying the generator to use, and
@@ -75,7 +79,7 @@ public class JkOpenApiSourceGenerator extends JkProjectSourceGenerator {
     }
 
     @Override
-    protected void generate(JkProject project, Path generatedSourceDir) {
+    public void generate(JkProject project, Path generatedSourceDir) {
         JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
         JkOpenapiCmdBuilder generateCmdBuilder = JkOpenapiCmdBuilder.of(generatorName, inputSpecLocation)
                 .add(JkOpenapiCmdBuilder.OUTPUT_PATH, generatedSourceDir.toString())

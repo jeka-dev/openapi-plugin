@@ -13,7 +13,7 @@ class Build extends KBean {
 
     protected void init() {
         JkJekaVersionRanges.setCompatibilityRange(baseKBean.getManifest(),
-                "0.11.0-alpha.3",
+                "0.11.8",
                 "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
         baseKBean.setVersionSupplier(JkGit.of()::getJkVersionFromTag);
     }
