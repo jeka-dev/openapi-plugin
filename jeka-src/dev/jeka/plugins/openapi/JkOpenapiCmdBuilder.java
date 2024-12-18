@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Builder for constructing an openAPi 'generate' command line.
  * See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
- *
+ * <p>
  * This class is meant to be used in conjunction with {@link JkOpenApiGeneratorCli},
  * {@link JkOpenApiSourceGenerator} or {@link OpenapiKBean}.
  */
@@ -47,17 +47,21 @@ public class JkOpenapiCmdBuilder {
 
     public static final String GLOBAL_PROPERTY = "--global-property";
 
-    private List<String> args = new LinkedList();
+    private final List<String> args = new LinkedList<>();
 
-    private StringBuilder additionalProperties = new StringBuilder();
+    private final StringBuilder additionalProperties = new StringBuilder();
 
-    private StringBuilder globalProperties = new StringBuilder();
+    private final StringBuilder globalProperties = new StringBuilder();
 
-    private StringBuilder importMappings = new StringBuilder();
+    private final StringBuilder importMappings = new StringBuilder();
 
-    private StringBuilder typeMappings = new StringBuilder();
+    private final StringBuilder typeMappings = new StringBuilder();
 
     private boolean generateTests = false;
+
+    public static JkOpenapiCmdBuilder of() {
+        return new JkOpenapiCmdBuilder();
+    }
 
     public static JkOpenapiCmdBuilder of(String generatorName, String specLocation) {
         JkOpenapiCmdBuilder builder = new JkOpenapiCmdBuilder();
@@ -66,8 +70,25 @@ public class JkOpenapiCmdBuilder {
         return builder;
     }
 
+    /**
+     * Creates a deep copy of the current {@code JkOpenapiCmdBuilder} instance.
+     * The returned instance contains the same configurations and properties
+     * as the original object but is a separate object that can be modified independently.
+     */
+    public JkOpenapiCmdBuilder copy() {
+        JkOpenapiCmdBuilder result = new JkOpenapiCmdBuilder();
+        result.args.addAll(args);
+        result.globalProperties.append(globalProperties);
+        result.importMappings.append(importMappings);
+        result.typeMappings.append(typeMappings);
+        result.additionalProperties.append(additionalProperties);
+        result.typeMappings.append(typeMappings);
+        result.generateTests = generateTests;
+        return result;
+    }
+
     public JkOpenapiCmdBuilder add(String ...args) {
-        Arrays.stream(args).forEach(item -> this.args.add(item));
+        this.args.addAll(Arrays.asList(args));
         return this;
     }
 
@@ -75,13 +96,11 @@ public class JkOpenapiCmdBuilder {
         return add(API_PACKAGE, packageName).add(MODEL_PACKAGE, packageName);
     }
 
-
-
     /**
      * Adds additional property specific to the generator. See <a href="https://openapi-generator.tech/docs/generators">documentation</a>.
      */
     public JkOpenapiCmdBuilder addAdditionalProperties(String key, String value) {
-        if (additionalProperties.length() > 0) {
+        if (!additionalProperties.isEmpty()) {
             additionalProperties.append(",");
         }
         additionalProperties.append(key).append("=").append(value);
@@ -93,7 +112,7 @@ public class JkOpenapiCmdBuilder {
      * See <a href="https://openapi-generator.tech/docs/globals">documentation</a>.
      */
     public JkOpenapiCmdBuilder addGlobalProperties(String key, String value) {
-        if (globalProperties.length() > 0) {
+        if (!globalProperties.isEmpty()) {
             globalProperties.append(",");
         }
         globalProperties.append(key).append("=").append(value);
@@ -104,7 +123,7 @@ public class JkOpenapiCmdBuilder {
      * Adds import-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
     public JkOpenapiCmdBuilder addImportMapping(String primitiveTypeName, String fullQualifiedClassName) {
-        if (importMappings.length() > 0) {
+        if (!importMappings.isEmpty()) {
             importMappings.append(",");
         }
         importMappings.append(primitiveTypeName).append("=").append(fullQualifiedClassName);
@@ -115,35 +134,66 @@ public class JkOpenapiCmdBuilder {
      * Adds type-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
     public JkOpenapiCmdBuilder addTypeMapping(String primitiveTypeName, String fullQualifiedClassName) {
-        if (typeMappings.length() > 0) {
+        if (!typeMappings.isEmpty()) {
             typeMappings.append(",");
         }
         typeMappings.append(primitiveTypeName).append("=").append(fullQualifiedClassName);
-        return  this;
+        return this;
+    }
+
+    /**
+     * Sets the name of the generator to be used for code generation.
+     *
+     * @param generatorName The name of the generator. It specifies the code generator to use.
+     */
+    public JkOpenapiCmdBuilder setGeneratorName(String generatorName) {
+        return setStartingOption(GENERATOR_NAME, generatorName);
+    }
+
+    /**
+     * Sets the input specification for the OpenAPI code generation process.
+     *
+     * @param specLocation The location of the OpenAPI specification. It can be a URL or a file path.
+     */
+    public JkOpenapiCmdBuilder setInputSpec(String specLocation) {
+        return setStartingOption(INPUT_SPEC, specLocation);
     }
 
     /**
      * Returns the arguments that forms the 'generate' command to execute.
      */
     public List<String> build() {
-        LinkedList result = new LinkedList<>();
+        LinkedList<String> result = new LinkedList<>();
         result.add("generate");
         result.addAll(this.args);
-        if (additionalProperties.length() > 0) {
+        if (!additionalProperties.isEmpty()) {
             result.add(ADDITIONAL_PROPERTIES + "=" + additionalProperties);
         }
-        if (globalProperties.length() > 0) {
+        if (!globalProperties.isEmpty()) {
             result.add(GLOBAL_PROPERTY + "=" + globalProperties);
         }
-        if (importMappings.length() > 0) {
+        if (!importMappings.isEmpty()) {
             result.add(IMPORT_MAPPINGS + "=" + importMappings);
         }
-        if (typeMappings.length() > 0) {
+        if (!typeMappings.isEmpty()) {
             result.add(TYPE_MAPPINGS + "=" + typeMappings);
         }
         result.add(ADDITIONAL_PROPERTIES + "=sourceFolder=/");
         result.add(GLOBAL_PROPERTY);
         result.add("modelTests=false,apiTests=false");
         return result;
+    }
+
+    private JkOpenapiCmdBuilder setStartingOption(String optionName, String optionValue) {
+        int optionIndex = this.args.indexOf(optionName);
+        if (optionIndex < 0) {
+            this.args.add(0, optionName);
+            this.args.add(1, optionValue);
+        } else {
+            int valueIndex = optionIndex + 1;
+            this.args.remove(valueIndex);
+            this.args.add(valueIndex, optionValue);
+        }
+        return this;
     }
 }

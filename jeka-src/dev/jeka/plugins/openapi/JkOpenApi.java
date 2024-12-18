@@ -47,10 +47,10 @@ public class JkOpenApi {
      */
     public JkOpenApiSourceGenerator addSourceGenerator(JkProject project, String generatorName, String specLocation, String packageName) {
         JkOpenApiSourceGenerator generator = JkOpenApiSourceGenerator.of(generatorName, specLocation)
-                .setCliVersion(version).customize(builder -> builder
+                .setCliVersion(version);
+        generator.openapiCmd
                         .addApiAndModelPackage(packageName)
-                        .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
-                );
+                        .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest");
         project.compilation.addSourceGenerator(generator);
         return generator;
     }
@@ -61,9 +61,9 @@ public class JkOpenApi {
      * @see #addSourceGenerator(JkProject, String, String)
      */
     public JkOpenApiSourceGenerator addSpringbootServerGenerator(JkProject project, String specLocation, String packageName) {
-        return addSourceGenerator(project, "spring", specLocation, packageName).customize(builder ->
-                builder.addAdditionalProperties("useSpringBoot3", "true")
-        );
+        JkOpenApiSourceGenerator result = addSourceGenerator(project, "spring", specLocation, packageName);
+        result.openapiCmd.addAdditionalProperties("useSpringBoot3", "true");
+        return result;
     }
 
     /**

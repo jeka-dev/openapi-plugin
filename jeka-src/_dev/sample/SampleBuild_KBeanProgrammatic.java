@@ -19,15 +19,14 @@ public class SampleBuild_KBeanProgrammatic extends KBean {
         JkProject project = JkProject.of();
         //...
         JkOpenApi.ofVersion(OPENAPI_CLI_VERSION).addSourceGenerator(project, "spring", SPEC_URL)
-                .customize(cmdBuilder -> cmdBuilder
-                    .addApiAndModelPackage("com.mycompany")
-                    .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
-                    .addAdditionalProperties("useSpringBoot3", "true")
-                    .add("--language-specific-primitives=Pet")
-                    .addImportMapping("Pet", "com.yourpackage.models.Pet")
-                    .addImportMapping("DateTime", "java.time.LocalDateTime")
-                    .addTypeMapping("DateTime", "java.time.LocalDateTime")
-        );
+            .openapiCmd
+                .addApiAndModelPackage("com.mycompany")
+                .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                .addAdditionalProperties("useSpringBoot3", "true")
+                .add("--language-specific-primitives=Pet")
+                .addImportMapping("Pet", "com.yourpackage.models.Pet")
+                .addImportMapping("DateTime", "java.time.LocalDateTime")
+                .addTypeMapping("DateTime", "java.time.LocalDateTime");
         return project;
     }
 

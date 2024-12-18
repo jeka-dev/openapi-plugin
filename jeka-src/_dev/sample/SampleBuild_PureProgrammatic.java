@@ -16,15 +16,14 @@ public class SampleBuild_PureProgrammatic {
         JkLog.setDecorator(JkLog.Style.DEBUG);
         JkProject project = JkProject.of();
         JkOpenApiSourceGenerator generator = JkOpenApiSourceGenerator.of("spring", SPEC_URL)
-                .setCliVersion("7.0.1")
-                .customize(cmdBuilder -> cmdBuilder
-                    .addApiAndModelPackage("com.mycompany")
-                    .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
-                    .add("--language-specific-primitives=Pet")
-                    .addImportMapping("Pet", "com.yourpackage.models.Pet")
-                    .addImportMapping("DateTime", "java.time.LocalDateTime")
-                    .addTypeMapping("DateTime", "java.time.LocalDateTime")
-                );
+                .setCliVersion("7.0.1");
+        generator.openapiCmd
+                .addApiAndModelPackage("com.mycompany")
+                .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                .add("--language-specific-primitives=Pet")
+                .addImportMapping("Pet", "com.yourpackage.models.Pet")
+                .addImportMapping("DateTime", "java.time.LocalDateTime")
+                .addTypeMapping("DateTime", "java.time.LocalDateTime");
         project.compilation.addSourceGenerator(generator);
         project.compilation.generateSources();
     }

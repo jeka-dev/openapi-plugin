@@ -3,24 +3,30 @@
 
 # Openapi generator for JeKa
 
-Openapi plugin for [JeKa](https://jeka.dev) acts as a thin wrapper around [openapi-generator-cli](https://openapi-generator.tech/docs/usage).
+A plugin to generate code from [OpenAPI](https://www.openapis.org/) definitions.
 
-It handles on-the-fly installation for you, so you only have to specify which version you want to use.
+This plugin is a lightweight wrapper for [openapi-generator-cli](https://openapi-generator.tech/docs/usage) and provides:
 
-This plugin offers several out-of-the-box commands to invoke *openapi-generator-cli* conveniently. 
-To see list of provided commands and options, execute :
+- Automatic installation: Installs the OpenAPI generator for the specified version.
+- Easy access to common commands.
+- Automatic setup of OpenAPI generation as a project source generator.
 
-```bash
-jeka @dev.jeka:openapi-plugin:0.10.38.0 openapi#help
-````
-Furthermore, this plugin offers convenient methods to link source code generation with any project KBean.
+Resources:
+  - Command-line documentation: `jeka openapi: --doc` or `jeka @dev.jeka:openapi-plugin:0.11.8-1 openapi: --doc`.
+  - Source code: [Visit here](jeka-src/dev/jeka/plugins/openapi/OpenapiKBean.java).
+  - OpenAPI: [Visit here](https://www.openapis.org/).
+  - OpenAPI Generator: [Visit here](https://openapi-generator.tech/docs/usage).
+  - OpenAPI Generator documentation: [Visit here](https://openapi-generator.tech/docs/usage/#generate).
 
-The generation match strictly the openapi-generator-cli syntax, so you can refer to [the official documentation](https://openapi-generator.tech/docs/usage/#generate) 
-to generate sources for any target technology without limitations.
+## Initialisation
 
-## Using jeka.properties
+The plugin scans properties named `openapi.gen.xxx`,
+creates a source generator for each, and registers it to the `ProjectKBean`.
 
-You can append openapi source generator to your working project, just declaring properties in your *local.properties* file, following the below example.
+## Configuration
+
+You can append openapi source generator to your working project, just declaring properties in your *jeka.properties* file, 
+following the below example:
 
 ```properties
 # Import this plugin into JeKa classpath
@@ -44,49 +50,36 @@ openapi.gen.myClient=generate -g client \
   -i https://my.spec.server/an-api.json
 ```
 
-See project example [here](./_dev.sample-props).
+See project example [here](sample-props/jeka.properties).
 
-## Using programmatic method
+## Programmatic Usage
 
-Alternatively, you can leverage of the fluent api to link your built project with an openapi 
-source code generator, as demonstrated below.
+Programmatic configuration may feel more natural to setup non-trivial structures. 
 
 ```java
-import dev.jeka.core.tool.JkInjectClasspath;
+String SPEC_URL = "https://petstore.swagger.io/v2/swagger.json";
 
-@JkInjectClasspath("dev.jeka:openapi-plugin:0.10.38.1")
-public class SampleBuild_Programmatic extends JkBean {
+// Create a source generator
+JkOpenapiSourceGenerator sourceGenerator = JkOpenapiSourceGenerator.of("spring", SPEC_URL);
+sourceGenerator.openapiCmd
+        .addApiAndModelPackage("com.mycompany")
+        .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+        .addAdditionalProperties("useSpringBoot3", "true")
+        .add("--language-specific-primitives=Pet")
+        .addImportMapping("Pet", "com.yourpackage.models.Pet")
+        .addImportMapping("DateTime", "java.time.LocalDateTime")
+        .addTypeMapping("DateTime", "java.time.LocalDateTime");
 
-    private static final String SPEC_URL = "https://petstore.swagger.io/v2/swagger.json";
-
-    private static final String OPENAPI_CLI_VERSION = "7.0.1";
-
-    private JkProject project() {
-        JkProject project = JkProject.of();
-        //...
-        JkOpenApi.ofVersion(OPENAPI_CLI_VERSION).addSourceGenerator(project, "spring", SPEC_URL)
-                .customize(cmdBuilder -> cmdBuilder
-                        .addApiAndModelPackage("com.mycompany")
-                        .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
-                        .addAdditionalProperties("useSpringBoot3", "true")
-                        .add("--language-specific-primitives=Pet")
-                        .addImportMapping("Pet", "com.yourpackage.models.Pet")
-                        .addImportMapping("DateTime", "java.time.LocalDateTime")
-                        .addTypeMapping("DateTime", "java.time.LocalDateTime")
-                );
-        return project;
-    }
-
-    public void genCode() {
-        project().compilation.generateSources();
-    }
-    ...
+// Bind this generator to the project
+JkProject project = myProject();
+project.compilation.addSourceGenerator(project);
 }
 ```
 
-See project example [here](./_dev.sample-props).
+See project example [here](sample-prog/jeka-src/SampleProgBuild.java).
 
-## Developers
+_______________
+## Contributors
 
 The plugin code lies in *jeka-src* and so is built using the *base* KBean instead of *project*.
 
@@ -94,46 +87,4 @@ The plugin code lies in *jeka-src* and so is built using the *base* KBean instea
 
 Just use the [github release mechanism](https://github.com/jeka-dev/openapi-plugin/releases).
 Creating a release consists in creating a tag, that will trigger a build and a publication on Maven Central.
-
-### Publication on Maven central
-
-This repository can be used as an example for publishing on Maven Central.
-
-The only things to do for publishing to Maven Central are :
-
-1. Add following properties to *jeka.properties* :
-```properties
-# Download nexus plugin to auto publish after the artifacts are sent to the staging repo
-jeka.inject.classpath=dev.jeka:nexus-plugin
-
-@project.moduleId=my.org:my-project
-
-# version can also be got from Git, see real jeka.properties file
-@project.version=1.0.0
-
-# Configuration for deploying to Maven central
-@maven.publication.predefinedRepo=OSSRH
-@maven.publication.metadata.projectName=OpenApi plugin for JeKa
-@maven.publication.metadata.projectDescription=OpenApi plugin for JeKa
-@maven.publication.metadata.projectUrl=https://github.com/jeka-dev/openapi-plugin
-@maven.publication.metadata.projectScmUrl=https://github.com/jeka-dev/openapi-plugin.git
-@maven.publication.metadata.licenses=Apache License V2.0:https://www.apache.org/licenses/LICENSE-2.0.html
-@maven.publication.metadata.developers=djeang:djeangdev@yahoo.fr
-
-# Use Nexus plugin to auto-publish
-@nexus=
-```
-
-2. Set up environment variables like :
-```yaml
-env:
-jeka.repos.publish.username: ${{ secrets.OSSRH_USER }}
-jeka.repos.publish.password: ${{ secrets.OSSRH_PWD }}
-jeka.gpg.secret-key: ${{ secrets.GPG_SECRET_KEY}}
-jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
-```
-
-The content of `secrets.GPG_SECRET_KEY` has been obtained by executing : `gpg --export-secret-key --armor my-key-name`.
-
-Just execute `jeka maven: publish` to publish on Maven Central.
 

@@ -3,29 +3,26 @@ package dev.jeka.plugins.openapi;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.project.JkProjectSourceGenerator;
 import dev.jeka.core.api.system.JkLog;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 
 import java.nio.file.Path;
-import java.util.function.Consumer;
 
 /**
  * A {@link JkProjectSourceGenerator} to be added to projects needing an openApi source
  * generation.
  */
-public class JkOpenApiSourceGenerator implements JkProjectSourceGenerator {
-
-    private final String generatorName;
-
-    private final String inputSpecLocation;
+public final class JkOpenApiSourceGenerator implements JkProjectSourceGenerator {
 
     private String cliVersion = JkOpenApiGeneratorCli.DEFAULT_CLI_VERSION;
 
-    private Consumer<JkOpenapiCmdBuilder> customizer = generateCmdBuilder -> {};
+    /**
+     * Represents a pre-configured instance of {@link JkOpenapiCmdBuilder}
+     * designed to facilitate the construction of OpenAPI 'generate' command-line arguments.
+     */
+    public final JkOpenapiCmdBuilder openapiCmd = JkOpenapiCmdBuilder.of();
 
     private JkOpenApiSourceGenerator(String generatorName, String inputSpecLocation) {
-        this.generatorName = generatorName;
-        this.inputSpecLocation = inputSpecLocation;
+        openapiCmd.setInputSpec(inputSpecLocation);
+        openapiCmd.setGeneratorName(generatorName);
     }
 
     /**
@@ -62,17 +59,6 @@ public class JkOpenApiSourceGenerator implements JkProjectSourceGenerator {
         return this;
     }
 
-    /**
-     * Defines the openApi command line to be executed for generating sources. There is no
-     * need to specify the specification location here, as it has already been mentioned
-     * through the {@link #of(String, String)} factory method.
-     * @param customizer A builder to construct command line conveniently.
-     */
-    public JkOpenApiSourceGenerator customize(Consumer<JkOpenapiCmdBuilder> customizer) {
-        this.customizer = customizer;
-        return this;
-    }
-
     @Override
     public String getDirName() {
         return "openapi";
@@ -80,17 +66,16 @@ public class JkOpenApiSourceGenerator implements JkProjectSourceGenerator {
 
     @Override
     public void generate(JkProject project, Path generatedSourceDir) {
-        JkOpenApiGeneratorCli cmd = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
-        JkOpenapiCmdBuilder generateCmdBuilder = JkOpenapiCmdBuilder.of(generatorName, inputSpecLocation)
+        JkOpenApiGeneratorCli cli = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
+        JkOpenapiCmdBuilder cmd = openapiCmd.copy()
                 .add(JkOpenapiCmdBuilder.OUTPUT_PATH, generatedSourceDir.toString())
                 .addAdditionalProperties("sourceFolder", "/")
                 .addGlobalProperties("modelTests", "false")
                 .addGlobalProperties("apiTests", "false");
         if (JkLog.isVerbose()) {
-            generateCmdBuilder.add("--verbose");
+            cmd.add("--verbose");
         }
-        customizer.accept(generateCmdBuilder);
-        cmd.exec(generateCmdBuilder.build());
+        cli.exec(cmd.build());
     }
 
     @Override
