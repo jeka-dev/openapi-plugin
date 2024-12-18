@@ -73,7 +73,6 @@ sourceGenerator.openapiCmd
 // Bind this generator to the project
 JkProject project = myProject();
 project.compilation.addSourceGenerator(project);
-}
 ```
 
 See project example [here](sample-prog/jeka-src/SampleProgBuild.java).
