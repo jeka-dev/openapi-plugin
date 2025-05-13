@@ -12,7 +12,7 @@ This plugin is a lightweight wrapper for [openapi-generator-cli](https://openapi
 - Automatic setup of OpenAPI generation as a project source generator.
 
 Resources:
-  - Command-line documentation: `jeka openapi: --doc` or `jeka @dev.jeka:openapi-plugin:0.11.8-1 openapi: --doc`.
+  - Command-line documentation: `jeka openapi: --doc` or `jeka -cp=dev.jeka:openapi-plugin:0.11.8-1 openapi: --doc`.
   - Source code: [Visit here](jeka-src/dev/jeka/plugins/openapi/OpenapiKBean.java).
   - OpenAPI: [Visit here](https://www.openapis.org/).
   - OpenAPI Generator: [Visit here](https://openapi-generator.tech/docs/usage).
