@@ -4,6 +4,7 @@ import dev.jeka.core.api.depmanagement.JkCoordinateFileProxy;
 import dev.jeka.core.api.depmanagement.JkDepSuggest;
 import dev.jeka.core.api.depmanagement.JkRepoSet;
 import dev.jeka.core.api.java.JkJavaProcess;
+import dev.jeka.core.api.system.JkLog;
 import dev.jeka.core.api.utils.JkUtilsString;
 
 import java.nio.file.Path;
@@ -15,25 +16,35 @@ import java.util.List;
  */
 public class JkOpenApiGeneratorCli {
 
-    public static final String DEFAULT_CLI_VERSION = "7.6.0";
+    @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli")
+    public static final String DEFAULT_CLI_VERSION = "7.13.0";
 
     private final JkRepoSet repos;
 
     private final String cliVersion;
 
+    private boolean printOutput;
+
     private JkOpenApiGeneratorCli(JkRepoSet repos,
-                                  @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String cliVersion) {
+                                  @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:")
+                                  String cliVersion) {
         this.repos = repos;
         this.cliVersion = cliVersion;
     }
 
     public final static JkOpenApiGeneratorCli of(JkRepoSet repoSet,
-                                                 @JkDepSuggest(versionOnly = true, hint = "org.openapitools:openapi-generator-cli:") String cliVersion) {
+                                                 @JkDepSuggest(versionOnly = true,
+                                                         hint = "org.openapitools:openapi-generator-cli:")
+                                                 String cliVersion) {
         return new JkOpenApiGeneratorCli(repoSet, cliVersion);
     }
 
     public int exec(String ...args) {
-        return javaProcess().addParams(args).exec().getExitCode();
+        return javaProcess()
+                .addParams(args)
+                .setLogCommand(JkLog.isVerbose())
+                .setLogWithJekaDecorator(printOutput)
+                .exec().getExitCode();
     }
 
     public int exec(List<String> args) {
@@ -41,10 +52,16 @@ public class JkOpenApiGeneratorCli {
     }
 
     /**
-     * Executes the specified command line as <li>generate -g go --additional-properties=prependFormOrBodyParameters=true -o out -i petstore.yaml</li>
+     * Executes the specified command line as <li>generate -g go
+     * --additional-properties=prependFormOrBodyParameters=true -o out -i petstore.yaml</li>
      */
     public int execCmdLine(String args) {
         return exec(Arrays.asList(JkUtilsString.parseCommandline(args)));
+    }
+
+    public JkOpenApiGeneratorCli setPrintOutput(boolean printOutput) {
+        this.printOutput = printOutput;
+        return this;
     }
 
     private JkJavaProcess javaProcess() {

@@ -8,14 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Builder for constructing an openAPi 'generate' command line.
+ * Builder for constructing an openAPi 'generate' command line programmatically.
  * See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
  * <p>
  * This class is meant to be used in conjunction with {@link JkOpenApiGeneratorCli},
  * {@link JkOpenApiSourceGenerator} or {@link OpenapiKBean}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JkOpenapiCmdBuilder {
+public class JkOpenapiGenerateBuilder {
 
     public static final String INPUT_SPEC = "--input-spec";
 
@@ -59,12 +59,12 @@ public class JkOpenapiCmdBuilder {
 
     private boolean generateTests = false;
 
-    public static JkOpenapiCmdBuilder of() {
-        return new JkOpenapiCmdBuilder();
+    public static JkOpenapiGenerateBuilder of() {
+        return new JkOpenapiGenerateBuilder();
     }
 
-    public static JkOpenapiCmdBuilder of(String generatorName, String specLocation) {
-        JkOpenapiCmdBuilder builder = new JkOpenapiCmdBuilder();
+    public static JkOpenapiGenerateBuilder of(String generatorName, String specLocation) {
+        JkOpenapiGenerateBuilder builder = new JkOpenapiGenerateBuilder();
         builder.add(GENERATOR_NAME, generatorName);
         builder.add(INPUT_SPEC, specLocation);
         return builder;
@@ -75,8 +75,8 @@ public class JkOpenapiCmdBuilder {
      * The returned instance contains the same configurations and properties
      * as the original object but is a separate object that can be modified independently.
      */
-    public JkOpenapiCmdBuilder copy() {
-        JkOpenapiCmdBuilder result = new JkOpenapiCmdBuilder();
+    public JkOpenapiGenerateBuilder copy() {
+        JkOpenapiGenerateBuilder result = new JkOpenapiGenerateBuilder();
         result.args.addAll(args);
         result.globalProperties.append(globalProperties);
         result.importMappings.append(importMappings);
@@ -87,19 +87,19 @@ public class JkOpenapiCmdBuilder {
         return result;
     }
 
-    public JkOpenapiCmdBuilder add(String ...args) {
+    public JkOpenapiGenerateBuilder add(String ...args) {
         this.args.addAll(Arrays.asList(args));
         return this;
     }
 
-    public JkOpenapiCmdBuilder addApiAndModelPackage(String packageName) {
+    public JkOpenapiGenerateBuilder addApiAndModelPackage(String packageName) {
         return add(API_PACKAGE, packageName).add(MODEL_PACKAGE, packageName);
     }
 
     /**
      * Adds additional property specific to the generator. See <a href="https://openapi-generator.tech/docs/generators">documentation</a>.
      */
-    public JkOpenapiCmdBuilder addAdditionalProperties(String key, String value) {
+    public JkOpenapiGenerateBuilder addAdditionalProperties(String key, String value) {
         if (!additionalProperties.isEmpty()) {
             additionalProperties.append(",");
         }
@@ -111,7 +111,7 @@ public class JkOpenapiCmdBuilder {
      * Adds global property specific to the generator.
      * See <a href="https://openapi-generator.tech/docs/globals">documentation</a>.
      */
-    public JkOpenapiCmdBuilder addGlobalProperties(String key, String value) {
+    public JkOpenapiGenerateBuilder addGlobalProperties(String key, String value) {
         if (!globalProperties.isEmpty()) {
             globalProperties.append(",");
         }
@@ -122,7 +122,7 @@ public class JkOpenapiCmdBuilder {
     /**
      * Adds import-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
-    public JkOpenapiCmdBuilder addImportMapping(String primitiveTypeName, String fullQualifiedClassName) {
+    public JkOpenapiGenerateBuilder addImportMapping(String primitiveTypeName, String fullQualifiedClassName) {
         if (!importMappings.isEmpty()) {
             importMappings.append(",");
         }
@@ -133,7 +133,7 @@ public class JkOpenapiCmdBuilder {
     /**
      * Adds type-mapping. See <a href="https://openapi-generator.tech/docs/usage#generate">documentation</a>.
      */
-    public JkOpenapiCmdBuilder addTypeMapping(String primitiveTypeName, String fullQualifiedClassName) {
+    public JkOpenapiGenerateBuilder addTypeMapping(String primitiveTypeName, String fullQualifiedClassName) {
         if (!typeMappings.isEmpty()) {
             typeMappings.append(",");
         }
@@ -146,7 +146,7 @@ public class JkOpenapiCmdBuilder {
      *
      * @param generatorName The name of the generator. It specifies the code generator to use.
      */
-    public JkOpenapiCmdBuilder setGeneratorName(String generatorName) {
+    public JkOpenapiGenerateBuilder setGeneratorName(String generatorName) {
         return setStartingOption(GENERATOR_NAME, generatorName);
     }
 
@@ -155,7 +155,7 @@ public class JkOpenapiCmdBuilder {
      *
      * @param specLocation The location of the OpenAPI specification. It can be a URL or a file path.
      */
-    public JkOpenapiCmdBuilder setInputSpec(String specLocation) {
+    public JkOpenapiGenerateBuilder setInputSpec(String specLocation) {
         return setStartingOption(INPUT_SPEC, specLocation);
     }
 
@@ -184,7 +184,7 @@ public class JkOpenapiCmdBuilder {
         return result;
     }
 
-    private JkOpenapiCmdBuilder setStartingOption(String optionName, String optionValue) {
+    private JkOpenapiGenerateBuilder setStartingOption(String optionName, String optionValue) {
         int optionIndex = this.args.indexOf(optionName);
         if (optionIndex < 0) {
             this.args.add(0, optionName);

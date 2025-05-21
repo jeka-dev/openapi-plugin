@@ -3,7 +3,7 @@ package _dev.sample;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.tool.KBean;
 import dev.jeka.plugins.openapi.JkOpenApi;
-import dev.jeka.plugins.openapi.JkOpenapiCmdBuilder;
+import dev.jeka.plugins.openapi.JkOpenapiGenerateBuilder;
 
 /**
  * Sample using only properties of OpenApiJkBean
@@ -21,7 +21,7 @@ public class SampleBuild_KBeanProgrammatic extends KBean {
         JkOpenApi.ofVersion(OPENAPI_CLI_VERSION).addSourceGenerator(project, "spring", SPEC_URL)
             .openapiCmd
                 .addApiAndModelPackage("com.mycompany")
-                .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                .add(JkOpenapiGenerateBuilder.MODEL_NAME_PREFIX, "Rest")
                 .addAdditionalProperties("useSpringBoot3", "true")
                 .add("--language-specific-primitives=Pet")
                 .addImportMapping("Pet", "com.yourpackage.models.Pet")

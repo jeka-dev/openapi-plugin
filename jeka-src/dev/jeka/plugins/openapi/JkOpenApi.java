@@ -50,7 +50,7 @@ public class JkOpenApi {
                 .setCliVersion(version);
         generator.openapiCmd
                         .addApiAndModelPackage(packageName)
-                        .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest");
+                        .add(JkOpenapiGenerateBuilder.MODEL_NAME_PREFIX, "Rest");
         project.compilation.addSourceGenerator(generator);
         return generator;
     }

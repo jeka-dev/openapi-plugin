@@ -15,10 +15,10 @@ public final class JkOpenApiSourceGenerator implements JkProjectSourceGenerator 
     private String cliVersion = JkOpenApiGeneratorCli.DEFAULT_CLI_VERSION;
 
     /**
-     * Represents a pre-configured instance of {@link JkOpenapiCmdBuilder}
+     * Represents a pre-configured instance of {@link JkOpenapiGenerateBuilder}
      * designed to facilitate the construction of OpenAPI 'generate' command-line arguments.
      */
-    public final JkOpenapiCmdBuilder openapiCmd = JkOpenapiCmdBuilder.of();
+    public final JkOpenapiGenerateBuilder openapiCmd = JkOpenapiGenerateBuilder.of();
 
     private JkOpenApiSourceGenerator(String generatorName, String inputSpecLocation) {
         openapiCmd.setInputSpec(inputSpecLocation);
@@ -67,12 +67,12 @@ public final class JkOpenApiSourceGenerator implements JkProjectSourceGenerator 
     @Override
     public void generate(JkProject project, Path generatedSourceDir) {
         JkOpenApiGeneratorCli cli = JkOpenApiGeneratorCli.of(project.dependencyResolver.getRepos(), cliVersion);
-        JkOpenapiCmdBuilder cmd = openapiCmd.copy()
-                .add(JkOpenapiCmdBuilder.OUTPUT_PATH, generatedSourceDir.toString())
+        JkOpenapiGenerateBuilder cmd = openapiCmd.copy()
+                .add(JkOpenapiGenerateBuilder.OUTPUT_PATH, generatedSourceDir.toString())
                 .addAdditionalProperties("sourceFolder", "/")
                 .addGlobalProperties("modelTests", "false")
                 .addGlobalProperties("apiTests", "false");
-        if (JkLog.isVerbose()) {
+        if (JkLog.isDebug()) {
             cmd.add("--verbose");
         }
         cli.exec(cmd.build());

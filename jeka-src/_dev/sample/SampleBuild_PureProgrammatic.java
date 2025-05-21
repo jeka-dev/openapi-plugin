@@ -3,7 +3,7 @@ package _dev.sample;
 import dev.jeka.core.api.project.JkProject;
 import dev.jeka.core.api.system.JkLog;
 import dev.jeka.plugins.openapi.JkOpenApiSourceGenerator;
-import dev.jeka.plugins.openapi.JkOpenapiCmdBuilder;
+import dev.jeka.plugins.openapi.JkOpenapiGenerateBuilder;
 
 /**
  * Sample using only properties of OpenApiJkBean
@@ -19,7 +19,7 @@ public class SampleBuild_PureProgrammatic {
                 .setCliVersion("7.0.1");
         generator.openapiCmd
                 .addApiAndModelPackage("com.mycompany")
-                .add(JkOpenapiCmdBuilder.MODEL_NAME_PREFIX, "Rest")
+                .add(JkOpenapiGenerateBuilder.MODEL_NAME_PREFIX, "Rest")
                 .add("--language-specific-primitives=Pet")
                 .addImportMapping("Pet", "com.yourpackage.models.Pet")
                 .addImportMapping("DateTime", "java.time.LocalDateTime")
