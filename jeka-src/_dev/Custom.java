@@ -13,7 +13,7 @@ class Custom extends KBean {
     @JkPostInit
     private void postInit(BaseKBean baseKBean) {
         JkJekaVersionRanges.setCompatibilityRange(baseKBean.getManifest(),
-                "0.11.8",
+                "0.11.33",
                 "https://raw.githubusercontent.com/jeka-dev/openapi-plugin/master/breaking_versions.txt");
         baseKBean.setVersionSupplier(JkGit.of()::getJkVersionFromTag);
     }
