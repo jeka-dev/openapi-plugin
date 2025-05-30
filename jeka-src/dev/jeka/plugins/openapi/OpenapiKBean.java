@@ -16,7 +16,7 @@ import java.util.List;
 public class OpenapiKBean extends KBean {
 
     @JkDoc("The command line arguments in conjunction with 'exec' method.")
-    @JkSuggest({"generate -g spring", "generate -g java"})
+    @JkSuggest({"generate -g spring ", "generate -g java "})
     public String cmdLine;
 
     @JkDoc("Version of openapi-generator-cli to use.")
@@ -36,7 +36,7 @@ public class OpenapiKBean extends KBean {
 
     @JkDoc("Executes openApi cli with argument specified in 'cmdArgs'.")
     public void exec() {
-        exec(this.cmdLine, JkLog.isVerbose());
+        exec(this.cmdLine, true);
     }
 
     @JkDoc("Displays generic help about openApi cli options")
