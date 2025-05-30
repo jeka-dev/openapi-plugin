@@ -25,7 +25,7 @@ following the below example:
 
 ```properties
 # Import this plugin into JeKa classpath
-jeka.classpath=dev.jeka:openapi-plugin:0.11.33-1
+jeka.classpath=dev.jeka:openapi-plugin:0.11.38-0
 
 # By activating this plugin, project will automatically generate openapi code prior compilation.
 @openapi=on
