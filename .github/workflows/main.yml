@@ -21,4 +21,5 @@ jobs:
         jeka.repos.publish.password: ${{ secrets.OSSRH_PWD }}
         jeka.gpg.secret-key: ${{ secrets.GPG_SECRET_KEY}}
         jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      run: "./jeka base: pack centralportal: publish --stacktrace --inspect"
+      run: |
+        ./jeka -cp=dev.jeka:centralportal base: pack centralportal: publish --stacktrace --inspect
