@@ -22,5 +22,5 @@ jobs:
         jeka.gpg.secret-key: ${{ secrets.GPG_SECRET_KEY}}
         jeka.gpg.passphrase: ${{ secrets.GPG_PASSPHRASE }}
       run: |
-        ./jeka centralportal: --doc
+        ./jeka centralportal: --doc -i -st
         ./jeka base: pack centralportal: publish --stacktrace --inspect
