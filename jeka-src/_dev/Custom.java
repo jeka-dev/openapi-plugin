@@ -7,6 +7,8 @@ import dev.jeka.core.tool.JkPostInit;
 import dev.jeka.core.tool.KBean;
 import dev.jeka.core.tool.builtins.base.BaseKBean;
 
+@JkDep("org.junit.platform:junit-platform-launcher:1.12.2")
+@JkDep("org.junit.jupiter:junit-jupiter:5.12.2")
 @JkDep("org.projectlombok:lombok:1.18.24")
 class Custom extends KBean {
 
