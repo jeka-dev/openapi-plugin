@@ -43,6 +43,15 @@ jeka.classpath=dev.jeka:openapi-plugin:0.11.33-1
 @openapi.gen.config.0.typeMappings.date=java.time.LocalDate
 @openapi.gen.config.0.additionalProperties.useSpringBoot3=true
 
+# Typical configuration to generate a client for Spring-Boot 3
+# Needs to include 'org.openapitools:jackson-databind-nullable' dependency
+@openapi.gen.config.1.inputSpec=https://api.foojay.io/swagger/foojay-discoapi-3.0.yml
+@openapi.gen.config.1.generatorName=java
+@openapi.gen.config.1.generationPackage=app.clients.generated
+@openapi.gen.config.1.additionalProperties.library=resttemplate
+@openapi.gen.config.1.additionalProperties.useJakartaEe=true
+@openapi.gen.config.1.additionalProperties.useSpringBoot3=true
+
 # It's also possible to specify the raw open-api command line.
 @openapi.gen.cmdLine.my-client=generate -g java \
   --model-name-prefix Rest \
